@@ -24,10 +24,6 @@
 #include <Ethernet.h>
 #include <EthernetClient.h>
 
-#define collectorScheme "http://"
-#define cloudfrontDomain ".cloudfront.net"
-#define icePixel = ""
-
 public:
 
 /*==============================================================================
@@ -80,6 +76,7 @@ private:
 void SnowPlow::init(String domain)
 {
   this->trackerUrl = domain + String("/i")
+
   this->ethernet->begin(mac);
   delay(1000);
   this->client = new EthernetClient();
