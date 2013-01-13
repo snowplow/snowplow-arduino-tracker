@@ -28,29 +28,6 @@
 
 class SnowPlow
 {
-  private:
-    class EthernetClient* client;
-    class EthernetClass* ethernet;
-    
-    // From constructor
-    byte *mac;
-    String appId;
-    
-    // From setUserId
-    String userId;
-
-    // Misc we will probably delete
-    char rxdata[150];
-    int ret;
-    int stringPos;
-    boolean DataRx;
-    boolean RxLoop;
-    char c;
-    unsigned long timeout_time;
-    unsigned long time_now;
-    unsigned long timeout;
-    String myDataString;
-
   public:
     // Constructor
     SnowPlow(EthernetClass *ethernet, byte* mac, String appId); // Constructor
@@ -64,6 +41,29 @@ class SnowPlow
     
     // Track SnowPlow events
     int trackEvent(String category, String action, String label, String property, float value);
+
+  private:
+    class EthernetClient* client;
+    class EthernetClass* ethernet;
+
+    byte *mac;
+    String appId;
+    String userId;
+    String trackerUrl;
+
+    void init(void);
+
+    // Misc we will probably delete
+    char rxdata[150];
+    int ret;
+    int stringPos;
+    boolean DataRx;
+    boolean RxLoop;
+    char c;
+    unsigned long timeout_time;
+    unsigned long time_now;
+    unsigned long timeout;
+    String myDataString;
 };
 
 #endif

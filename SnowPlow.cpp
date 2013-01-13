@@ -26,11 +26,13 @@
 
 #define cloudfrontDomain ".cloudfront.net"
 
+public:
+
 /*==============================================================================
-* SnowPlow
-*
-* Constructor for Exosite class
-*=============================================================================*/
+ * SnowPlow
+ *
+ * Constructor for SnowPlow class.
+ *=============================================================================*/
 SnowPlow::SnowPlow(EthernetClass *ethernet, byte* mac, String appId)
 {  
   this->ethernet = ethernet;
@@ -39,13 +41,31 @@ SnowPlow::SnowPlow(EthernetClass *ethernet, byte* mac, String appId)
 }
 
 /*==============================================================================
-* init 
-*
-* initialization function for SnowPlow class. 
-*=============================================================================*/
+ * initCf 
+ *
+ * Initializes the SnowPlow tracker to talk to a collector
+ * hosted on CloudFront.
+ *=============================================================================*/
 void SnowPlow::initCf(String cfSubdomain)
 {
-  ethernet->begin(mac);
-  delay(500);
-  client = new EthernetClient();
+  this->ethernet->begin(mac);
+  delay(1000);
+  this->client = new EthernetClient();
+  this->trackerUrl = NULL; // TODO: fix this.
+
+  this->init();
+}
+
+private:
+
+/*==============================================================================
+ * init 
+ *
+ * Common initialization, called by both initCf and initUrl.
+ *=============================================================================*/
+void SnowPlow::init(void)
+{
+  this->ethernet->begin(mac);
+  delay(1000);
+  this->client = new EthernetClient();
 }
