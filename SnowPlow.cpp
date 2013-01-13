@@ -19,51 +19,33 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 
-#ifndef SnowPlow_h
-#define SnowPlow_h
-
 #include <SPI.h>
+#include "SnowPlow.h"
 #include <Ethernet.h>
 #include <EthernetClient.h>
 
-class SnowPlow
+#define cloudfrontDomain ".cloudfront.net"
+
+/*==============================================================================
+* SnowPlow
+*
+* Constructor for Exosite class
+*=============================================================================*/
+SnowPlow::SnowPlow(EthernetClass *ethernet, byte* mac, String appId)
+{  
+  this->ethernet = ethernet;
+  this->mac = mac;
+  this->appId = appId;
+}
+
+/*==============================================================================
+* init 
+*
+* initialization function for SnowPlow class. 
+*=============================================================================*/
+void SnowPlow::initCf(String cfSubdomain)
 {
-  private:
-    class EthernetClient* client;
-    class EthernetClass* ethernet;
-    
-    // From constructor
-    byte *mac;
-    String appId;
-    
-    // From setUserId
-    String userId;
-
-    // Misc we will probably delete
-    char rxdata[150];
-    int ret;
-    int stringPos;
-    boolean DataRx;
-    boolean RxLoop;
-    char c;
-    unsigned long timeout_time;
-    unsigned long time_now;
-    unsigned long timeout;
-    String myDataString;
-
-  public:
-    // Constructor
-    SnowPlow(EthernetClass *ethernet, byte* mac, String appId); // Constructor
-    
-    // Initialisation options for the HTTP connection
-    void initCf(String cfSubdomain);
-    void initUrl(String domain);
-
-    // Manually set the 'user' ID
-    void setUserId(String userId);
-    
-    // Track SnowPlow events
-    int trackEvent(String category, String action, String label, String property, float value);
-};
-
-#endif
+  ethernet->begin(mac);
+  delay(500);
+  client = new EthernetClient();
+}
