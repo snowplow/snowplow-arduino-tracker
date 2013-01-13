@@ -51,7 +51,7 @@ class SnowPlow
     String userId;
     String trackerUrl;
 
-    void init(void);
+    void init(String domain);
 
     // Misc we will probably delete
     char rxdata[150];

@@ -24,7 +24,9 @@
 #include <Ethernet.h>
 #include <EthernetClient.h>
 
+#define collectorScheme "http://"
 #define cloudfrontDomain ".cloudfront.net"
+#define icePixel = ""
 
 public:
 
@@ -45,15 +47,27 @@ SnowPlow::SnowPlow(EthernetClass *ethernet, byte* mac, String appId)
  *
  * Initializes the SnowPlow tracker to talk to a collector
  * hosted on CloudFront.
+ *
+ * Constructs collector domain then calls the private
+ * init() method.
  *=============================================================================*/
 void SnowPlow::initCf(String cfSubdomain)
 {
-  this->ethernet->begin(mac);
-  delay(1000);
-  this->client = new EthernetClient();
-  this->trackerUrl = NULL; // TODO: fix this.
+	String domain = cfSubdomain + String(".cloudfront.net")
+  this->init(domain);
+}
 
-  this->init();
+/*==============================================================================
+ * initUrl
+ *
+ * Initializes the SnowPlow tracker to talk to a self-hosted
+ * collector on a dedicated domain.
+ *
+ * Alias for private init() method.
+ *=============================================================================*/
+void SnowPlow::initUrl(String domain)
+{
+  this->init(domain);
 }
 
 private:
@@ -63,8 +77,9 @@ private:
  *
  * Common initialization, called by both initCf and initUrl.
  *=============================================================================*/
-void SnowPlow::init(void)
+void SnowPlow::init(String domain)
 {
+  this->trackerUrl = domain + String("/i")
   this->ethernet->begin(mac);
   delay(1000);
   this->client = new EthernetClient();
