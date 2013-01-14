@@ -75,9 +75,11 @@ private:
  *=============================================================================*/
 void SnowPlow::init(String domain)
 {
-  this->trackerUrl = domain + String("/i")
+  // Set trackerUrl and userId
+  this->trackerUrl = domain
+  this->userId = byteArray2String(this->mac)
 
-  this->ethernet->begin(mac);
+  this->ethernet->begin(this->mac);
   delay(1000);
   this->client = new EthernetClient();
 }
