@@ -21,7 +21,7 @@
 
 #include <SPI.h>
 #include <Ethernet.h>
-#include <SnowPlow.h>
+#include <SnowPlowTracker.h>
 
 // MAC address of this Arduino. Don't make const
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0xF8, 0xA0 };

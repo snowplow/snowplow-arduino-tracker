@@ -20,7 +20,7 @@
  */
 
 #include <SPI.h>
-#include "SnowPlow.h"
+#include "SnowPlowTracker.h"
 #include <Ethernet.h>
 #include <EthernetClient.h>
 
