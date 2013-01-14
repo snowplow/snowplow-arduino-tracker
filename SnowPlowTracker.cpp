@@ -51,7 +51,7 @@ SnowPlowTracker::SnowPlowTracker(EthernetClass *ethernet, byte* mac, String appI
  *=============================================================================*/
 void SnowPlowTracker::initCf(String cfSubdomain)
 {
-	String domain = cfSubdomain + String(".cloudfront.net");
+  String domain = cfSubdomain + String(".cloudfront.net");
   this->init(domain);
 }
 
@@ -91,26 +91,28 @@ void SnowPlowTracker::init(String domain)
 {
   // Set trackerUrl and userId
   this->trackerUrl = domain;
-  this->userId = bytes2String(this->mac, 6)
+  this->userId = mac2String(this->mac)
 
+  // Boot the Ethernet connection
   this->ethernet->begin(this->mac);
   delay(1000);
   this->client = new EthernetClient();
 }
 
 /*==============================================================================
- * bytes2String 
+ * mac2String 
  *
- * Helper to convert a byte array into a String.
- * Generated String is of the format: "00:01:0A:..."
+ * Helper to convert a MAC address byte array into a String.
+ * Generated String is of the format: "00:01:0A:2E:05:0B"
  *=============================================================================*/
-String SnowPlowTracker::bytes2String(byte* bytes, int numBytes)
+String SnowPlowTracker::mac2String(byte* mac)
 {
+  int macLength = 6
   String buffer = String();
-  for (int i = 0; i < numBytes; i++)
+  for (int i = 0; i < macLength; i++)
   {
     buffer += String(bytes[i], HEX);
-    if (i < numBytes - 1) {
+    if (i < macLength - 1) {
       buffer += ":";
     }
   }

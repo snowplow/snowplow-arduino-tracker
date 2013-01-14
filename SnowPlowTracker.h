@@ -52,7 +52,7 @@ class SnowPlowTracker
     String userId;
 
     void init(String domain);
-    void bytes2String(byte* bytes, int numBytes);
+    void mac2String(byte* mac);
 
     // Misc we will probably delete
     char rxdata[150];
