@@ -91,7 +91,7 @@ void SnowPlowTracker::init(String domain)
 {
   // Set trackerUrl and userId
   this->trackerUrl = domain;
-  this->userId = mac2String(this->mac)
+  this->userId = mac2String(this->mac);
 
   // Boot the Ethernet connection
   this->ethernet->begin(this->mac);
@@ -107,11 +107,11 @@ void SnowPlowTracker::init(String domain)
  *=============================================================================*/
 String SnowPlowTracker::mac2String(byte* mac)
 {
-  int macLength = 6
+  const int macLength = 6;
   String buffer = String();
   for (int i = 0; i < macLength; i++)
   {
-    buffer += String(bytes[i], HEX);
+    buffer += String(mac[i], HEX);
     if (i < macLength - 1) {
       buffer += ":";
     }
