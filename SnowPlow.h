@@ -30,7 +30,7 @@ class SnowPlow
 {
   public:
     // Constructor
-    SnowPlow(EthernetClass *ethernet, byte* mac, String appId); // Constructor
+    SnowPlow(EthernetClass *ethernet, byte* mac, String appId);
     
     // Initialisation options for the HTTP connection
     void initCf(String cfSubdomain);
@@ -48,10 +48,11 @@ class SnowPlow
 
     byte *mac;
     String appId;
-    String userId;
     String trackerUrl;
+    String userId;
 
     void init(String domain);
+    void bytes2String(byte* bytes, int numBytes);
 
     // Misc we will probably delete
     char rxdata[150];

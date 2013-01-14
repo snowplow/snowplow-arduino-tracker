@@ -24,6 +24,8 @@
 #include <Ethernet.h>
 #include <EthernetClient.h>
 
+#define trackerVersion "arduino-0.1.0"
+
 public:
 
 /*==============================================================================
@@ -44,12 +46,12 @@ SnowPlow::SnowPlow(EthernetClass *ethernet, byte* mac, String appId)
  * Initializes the SnowPlow tracker to talk to a collector
  * hosted on CloudFront.
  *
- * Constructs collector domain then calls the private
- * init() method.
+ * Constructs CloudFront collector domain then calls the
+ * private init() method.
  *=============================================================================*/
 void SnowPlow::initCf(String cfSubdomain)
 {
-	String domain = cfSubdomain + String(".cloudfront.net")
+	String domain = cfSubdomain + String(".cloudfront.net");
   this->init(domain);
 }
 
@@ -66,6 +68,18 @@ void SnowPlow::initUrl(String domain)
   this->init(domain);
 }
 
+/*==============================================================================
+ * setUserId 
+ *
+ * Sets the User Id for this Arduino.
+ * Overrides the default User Id, which
+ * is the Arduino's MAC address.
+ *=============================================================================*/
+void SnowPlow::setUserId(String userId)
+{
+  this->userId = userId;
+}
+
 private:
 
 /*==============================================================================
@@ -76,10 +90,29 @@ private:
 void SnowPlow::init(String domain)
 {
   // Set trackerUrl and userId
-  this->trackerUrl = domain
-  this->userId = byteArray2String(this->mac)
+  this->trackerUrl = domain;
+  this->userId = bytes2String(this->mac, 6)
 
   this->ethernet->begin(this->mac);
   delay(1000);
   this->client = new EthernetClient();
+}
+
+/*==============================================================================
+ * bytes2String 
+ *
+ * Helper to convert a byte array into a String.
+ * Generated String is of the format: "00:01:0A:..."
+ *=============================================================================*/
+String bytes2String(byte* bytes, int numBytes)
+{
+  String buffer = String();
+  for (int i = 0; i < numBytes; i++)
+  {
+    buffer += String(bytes[i], HEX);
+    if (i < numBytes - 1) {
+      buffer += ":";
+    }
+  }
+  return buffer;
 }
