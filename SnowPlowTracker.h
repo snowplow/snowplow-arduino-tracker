@@ -41,6 +41,7 @@ class SnowPlowTracker
     
     // Track SnowPlow events
     int trackEvent(String category, String action, String label, String property, float value);
+    int trackEvent(String category, String action, String label, String property, int value);
 
   private:
     class EthernetClient* client;
