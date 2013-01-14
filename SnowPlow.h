@@ -19,14 +19,14 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 
-#ifndef SnowPlow_h
-#define SnowPlow_h
+#ifndef SnowPlowTracker_h
+#define SnowPlowTracker_h
 
 #include <SPI.h>
 #include <Ethernet.h>
 #include <EthernetClient.h>
 
-class SnowPlow
+class SnowPlowTracker
 {
   public:
     // Constructor

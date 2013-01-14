@@ -33,7 +33,7 @@ public:
  *
  * Constructor for SnowPlow class.
  *=============================================================================*/
-SnowPlow::SnowPlow(EthernetClass *ethernet, byte* mac, String appId)
+SnowPlowTracker::SnowPlowTracker(EthernetClass *ethernet, byte* mac, String appId)
 {  
   this->ethernet = ethernet;
   this->mac = mac;
@@ -49,7 +49,7 @@ SnowPlow::SnowPlow(EthernetClass *ethernet, byte* mac, String appId)
  * Constructs CloudFront collector domain then calls the
  * private init() method.
  *=============================================================================*/
-void SnowPlow::initCf(String cfSubdomain)
+void SnowPlowTracker::initCf(String cfSubdomain)
 {
 	String domain = cfSubdomain + String(".cloudfront.net");
   this->init(domain);
@@ -63,7 +63,7 @@ void SnowPlow::initCf(String cfSubdomain)
  *
  * Alias for private init() method.
  *=============================================================================*/
-void SnowPlow::initUrl(String domain)
+void SnowPlowTracker::initUrl(String domain)
 {
   this->init(domain);
 }
@@ -75,7 +75,7 @@ void SnowPlow::initUrl(String domain)
  * Overrides the default User Id, which
  * is the Arduino's MAC address.
  *=============================================================================*/
-void SnowPlow::setUserId(String userId)
+void SnowPlowTracker::setUserId(String userId)
 {
   this->userId = userId;
 }
@@ -87,7 +87,7 @@ private:
  *
  * Common initialization, called by both initCf and initUrl.
  *=============================================================================*/
-void SnowPlow::init(String domain)
+void SnowPlowTracker::init(String domain)
 {
   // Set trackerUrl and userId
   this->trackerUrl = domain;
@@ -104,7 +104,7 @@ void SnowPlow::init(String domain)
  * Helper to convert a byte array into a String.
  * Generated String is of the format: "00:01:0A:..."
  *=============================================================================*/
-String bytes2String(byte* bytes, int numBytes)
+String SnowPlowTracker::bytes2String(byte* bytes, int numBytes)
 {
   String buffer = String();
   for (int i = 0; i < numBytes; i++)
