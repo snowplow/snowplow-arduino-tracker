@@ -24,33 +24,33 @@
 #include <Ethernet.h>
 #include <EthernetClient.h>
 
-#define trackerVersion "arduino-0.1.0"
+private:
+
+// Initialize constants
+const char* SnowPlowTracker::kUserAgent = "Arduino/2.0";
+const char* SnowPlowTracker::kVersion = "arduino-0.1.0"
 
 public:
 
-/*==============================================================================
- * SnowPlow
- *
+/**
  * Constructor for SnowPlow class.
- *=============================================================================*/
-SnowPlowTracker::SnowPlowTracker(EthernetClass *ethernet, byte* mac, String appId)
-{  
+ *
+ * 
+ **/
+SnowPlowTracker::SnowPlowTracker(EthernetClass *ethernet, const byte* mac, const String appId) {  
   this->ethernet = ethernet;
   this->mac = mac;
   this->appId = appId;
 }
 
-/*==============================================================================
- * initCf 
- *
+/**
  * Initializes the SnowPlow tracker to talk to a collector
  * hosted on CloudFront.
  *
- * Constructs CloudFront collector domain then calls the
- * private init() method.
- *=============================================================================*/
-void SnowPlowTracker::initCf(String cfSubdomain)
-{
+ * @param cfSubdomain the subdomain of the CloudFront
+ *                    collector e.g. "d3rkrsqld9gmqf"
+ */
+void SnowPlowTracker::initCf(const String cfSubdomain) {
   String domain = cfSubdomain + String(".cloudfront.net");
   this->init(domain);
 }
@@ -63,8 +63,7 @@ void SnowPlowTracker::initCf(String cfSubdomain)
  *
  * Alias for private init() method.
  *=============================================================================*/
-void SnowPlowTracker::initUrl(String domain)
-{
+void SnowPlowTracker::initUrl(const String domain) {
   this->init(domain);
 }
 
@@ -75,8 +74,7 @@ void SnowPlowTracker::initUrl(String domain)
  * Overrides the default User Id, which
  * is the Arduino's MAC address.
  *=============================================================================*/
-void SnowPlowTracker::setUserId(String userId)
-{
+void SnowPlowTracker::setUserId(const String userId) {
   this->userId = userId;
 }
 
@@ -87,10 +85,9 @@ private:
  *
  * Common initialization, called by both initCf and initUrl.
  *=============================================================================*/
-void SnowPlowTracker::init(String domain)
-{
+void SnowPlowTracker::init(const String domain) {
   // Set trackerUrl and userId
-  this->trackerUrl = domain;
+  this->collectorUrl = domain;
   this->userId = mac2String(this->mac);
 
   // Boot the Ethernet connection
@@ -105,16 +102,69 @@ void SnowPlowTracker::init(String domain)
  * Helper to convert a MAC address byte array into a String.
  * Generated String is of the format: "00:01:0A:2E:05:0B"
  *=============================================================================*/
-String SnowPlowTracker::mac2String(byte* mac)
-{
+String SnowPlowTracker::mac2String(const byte* mac) const {
   const int macLength = 6;
   String buffer = String();
-  for (int i = 0; i < macLength; i++)
-  {
+  for (int i = 0; i < macLength; i++) {
     buffer += String(mac[i], HEX);
     if (i < macLength - 1) {
       buffer += ":";
     }
   }
   return buffer;
+}
+
+
+int SnowPlowTracker::trackEvent(const String category, const String action, const String label, const String property, const float value) const {
+  // TODO: fix this crap.
+  char rxdata[150];
+  int ret = 0;
+  int stringPos = 0;
+  boolean DataRx = false;
+  boolean RxLoop = true;
+  char c;
+  unsigned long timeout_time = 0;
+  unsigned long time_now = 0;
+  unsigned long timeout = 3000; // 3 seconds
+  String myDataString = ""; // Allocate for actual data sent
+
+  if (client->connect(serverName,80)) {
+    if (client->connected()) {
+      // Send request to SnowPlow collector
+      client->println("GET /i HTTP/1.1");
+      client->print("Host: ");
+      client->println(this->collectorUrl);
+      client->print("User-Agent: ");
+      client->println(kUserAgent);
+      // TODO: check if we need more headers.
+
+      // Read from the nic
+      //
+      timeout_time = millis()+ timeout; 
+      while ((timeout_time > time_now) && RxLoop) { 
+        if (client->available()) {
+          if (!DataRx)
+            DataRx= true;          
+          c = client->read();
+          rxdata[stringPos] = c;          
+          stringPos += 1;
+        } else {
+          rxdata[stringPos] = 0;
+
+          if (DataRx) {
+            DataRx= false;
+            RxLoop = false;
+
+            ret=1;
+          }
+        }//else
+        time_now = millis();
+      }// while ((timeout_time > time_now) && RxLoop) {
+
+      client->stop();
+    }
+  }// if (client->connect(serverName,80)) {
+  
+  // Return updated status code
+  return ret;
 }

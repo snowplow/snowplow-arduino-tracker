@@ -29,19 +29,24 @@
 class SnowPlowTracker
 {
   public:
+
+    // Constants
+    static const char* kUserAgent;
+    static const char* kVersion;
+
     // Constructor
-    SnowPlow(EthernetClass *ethernet, byte* mac, String appId);
+    SnowPlow(EthernetClass *ethernet, const byte* mac, const String appId);
     
     // Initialisation options for the HTTP connection
-    void initCf(String cfSubdomain);
-    void initUrl(String domain);
+    void initCf(const String cfSubdomain);
+    void initUrl(const String domain);
 
     // Manually set the 'user' ID
-    void setUserId(String userId);
+    void setUserId(const String userId);
     
     // Track SnowPlow events
-    int trackEvent(String category, String action, String label, String property, float value);
-    int trackEvent(String category, String action, String label, String property, int value);
+    int trackEvent(const String category, const String action, const String label, const String property, const float value) const;
+    int trackEvent(const String category, const String action, const String label, const String property, const int value) const;
 
   private:
     class EthernetClient* client;
@@ -49,23 +54,11 @@ class SnowPlowTracker
 
     byte *mac;
     String appId;
-    String trackerUrl;
+    String collectorUrl;
     String userId;
 
     void init(String domain);
     void mac2String(byte* mac);
-
-    // Misc we will probably delete
-    char rxdata[150];
-    int ret;
-    int stringPos;
-    boolean DataRx;
-    boolean RxLoop;
-    char c;
-    unsigned long timeout_time;
-    unsigned long time_now;
-    unsigned long timeout;
-    String myDataString;
 };
 
 #endif
