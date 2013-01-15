@@ -37,20 +37,20 @@ public:
  *
  * 
  **/
-SnowPlowTracker::SnowPlowTracker(EthernetClass *ethernet, const byte* mac, const String appId) {  
-  this->ethernet = ethernet;
-  this->mac = mac;
-  this->appId = appId;
+SnowPlowTracker::SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, const String aAppId) {  
+  this->ethernet = aEthernet;
+  this->mac = aMac;
+  this->appId = aAppId;
 }
 
 /**
  * Initializes the SnowPlow tracker to talk to a collector
  * hosted on CloudFront.
  *
- * @param cfSubdomain the subdomain of the CloudFront
- *                    collector e.g. "d3rkrsqld9gmqf"
+ * @param aCfSubdomain the subdomain of the CloudFront
+ *                     collector e.g. "d3rkrsqld9gmqf"
  */
-void SnowPlowTracker::initCf(const String cfSubdomain) {
+void SnowPlowTracker::initCf(const String aCfSubdomain) {
   String domain = cfSubdomain + String(".cloudfront.net");
   this->init(domain);
 }
@@ -63,8 +63,8 @@ void SnowPlowTracker::initCf(const String cfSubdomain) {
  *
  * Alias for private init() method.
  *=============================================================================*/
-void SnowPlowTracker::initUrl(const String domain) {
-  this->init(domain);
+void SnowPlowTracker::initUrl(const String aHost) {
+  this->init(aHost);
 }
 
 /*==============================================================================
