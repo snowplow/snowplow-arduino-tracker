@@ -130,12 +130,18 @@ int SnowPlowTracker::trackEvent(const String category, const String action, cons
 
   if (client->connect(serverName,80)) {
     if (client->connected()) {
-      // Send request to SnowPlow collector
+
       client->println("GET /i HTTP/1.1");
+
       client->print("Host: ");
       client->println(this->collectorUrl);
+
       client->print("User-Agent: ");
       client->println(kUserAgent);
+
+      client->println();
+
+      
       // TODO: check if we need more headers.
 
       // Read from the nic
