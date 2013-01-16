@@ -28,7 +28,7 @@ private:
 
 // Initialize constants
 const char* SnowPlowTracker::kUserAgent = "Arduino/2.0";
-const char* SnowPlowTracker::kVersion = "arduino-0.1.0"
+const char* SnowPlowTracker::kVersion = "arduino-0.1.0";
 
 public:
 
