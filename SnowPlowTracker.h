@@ -47,6 +47,7 @@ class SnowPlowTracker
     // Track SnowPlow events
     int trackEvent(const String category, const String action, const String label, const String property, const float value) const;
     int trackEvent(const String category, const String action, const String label, const String property, const int value) const;
+    int trackEvent(const String category, const String action, const String label, const String property, const String value) const;
 
   private:
     class EthernetClient* client;
