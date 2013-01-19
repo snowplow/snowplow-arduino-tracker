@@ -27,32 +27,28 @@
 #include <EthernetClient.h>
 
 /**
- * Define our track event return values (not to
- * be confused with HTTP response codes).
- */
-
-// No issues
-// The end of the headers has been reached.  This consumes the '\n'
-static const int HTTP_SUCCESS =0;
-// Could not connect to the server
-static const int HTTP_ERROR_CONNECTION_FAILED =-1;
-// This call was made when the HttpClient class wasn't expecting it
-// to be called.  Usually indicates your code is using the class
-// incorrectly
-static const int HTTP_ERROR_CALL =-2;
-// Spent too long waiting for a reply
-static const int HTTP_ERROR_TIMED_OUT =-3;
-// The response from the server is invalid, is it definitely an HTTP
-// server?
-static const int HTTP_ERROR_INVALID_RESPONSE =-4;
-
-/**
  * SnowPlowTracker encapsulates our Arduino
  * tracking code for SnowPlow.
  */
 class SnowPlowTracker
 {
  public:
+
+  // Our return values from tracking an event
+  enum { 
+    // No issues
+    SUCCESS = 0,
+    // Could not connect to the server
+    ERROR_CONNECTION_FAILED = -1,
+    // SnowPlowTracker wasn't expecting this call to trackEvent
+    // Indicates code is using this library incorrectly
+    ERROR_UNEXPECTED_CALL = -2,
+    // Spent too long waiting for a reply
+    ERROR_TIMED_OUT = -3,
+    // The response from the server is invalid, is it definitely an HTTP
+    // server?
+    ERROR_INVALID_RESPONSE = -4
+  };
 
   // Constructor
   SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, const String aAppId);
