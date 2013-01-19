@@ -238,7 +238,7 @@ int SnowPlowTracker::trackEvent(
   Serial.println("Tracking event!");
 #endif
 
-  return 0;
+  return SnowPlowTracker::SUCCESS;
 }
 
 /**
