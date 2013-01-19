@@ -205,8 +205,8 @@ private:
  *        or d3rkrsqgmqf.cloudfront.net
  */
 void SnowPlowTracker::init(const String aHost) {
-  // Set trackerUrl and userId
-  this->collectorUrl = aHost;
+  // Set collectorHost and userId
+  this->collectorHost = aHost;
   this->userId = mac2String(this->mac);
 
   // Boot the Ethernet connection
