@@ -58,8 +58,8 @@ class SnowPlowTracker
   SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, const String aAppId);
 
   // Initialisation options for the HTTP connection
-  void initCf(String aCfSubdomain);
-  void initUrl(String aHost);
+  void initCf(const String aCfSubdomain);
+  void initUrl(const String aHost);
 
   // Manually set the 'user' ID
   void setUserId(String userId);

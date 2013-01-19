@@ -26,13 +26,13 @@
 #define LOGGING
 
 // MAC address of this Arduino. Don't make const
-byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0xF8, 0xA0 };
+const byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0xF8, 0xA0 };
 
 // SnowPlow CloudFront collector subdomain
-String snowplowCfSubdomain = "d3rkrsqld9gmqf";
+const String snowplowCfSubdomain = "d3rkrsqld9gmqf";
 
 // SnowPlow app name
-String snowplowAppName = "arduino-tracker-examples";
+const String snowplowAppName = "arduino-tracker-examples";
 
 // SnowPlow Tracker
 SnowPlowTracker snowplow(&Ethernet, mac, snowplowAppName);
