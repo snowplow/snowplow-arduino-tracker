@@ -23,6 +23,8 @@
 #include <Ethernet.h>
 #include <SnowPlowTracker.h>
 
+#define LOGGING
+
 // MAC address of this Arduino. Don't make const
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0xF8, 0xA0 };
 
