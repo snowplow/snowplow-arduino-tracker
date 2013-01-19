@@ -25,10 +25,10 @@
 
 #define LOGGING
 
-// MAC address of this Arduino. Don't make const
+// MAC address of this Arduino. Update with your shield's MAC address.
 const byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0xF8, 0xA0 };
 
-// SnowPlow CloudFront collector subdomain
+// SnowPlow CloudFront collector subdomain. Update with your collector.
 const String snowplowCfSubdomain = "d3rkrsqld9gmqf";
 
 // SnowPlow app name
