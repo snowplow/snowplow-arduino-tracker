@@ -85,7 +85,12 @@ void SnowPlowTracker::initUrl(const String aHost) {
  * @param @aUserId The new User Id
  */
 void SnowPlowTracker::setUserId(const String aUserId) {
-  this->userId = userId;
+  this->userId = aUserId;
+
+#ifdef LOGGING
+  Serial.print("SnowPlow User Id updated to: ");
+  Serial.println(this->userId);
+#endif
 }
 
 /**
@@ -189,7 +194,10 @@ int SnowPlowTracker::trackEvent(
   const String aProperty,
   const String aValue) const {
 
+#ifdef LOGGING
   Serial.println("Tracking event!");
+#endif
+
   return 0;
 }
 
@@ -213,6 +221,11 @@ void SnowPlowTracker::init(const String aHost) {
   this->ethernet->begin(this->mac);
   delay(1000); // Wait 1 sec
   this->client = new EthernetClient();
+
+#ifdef LOGGING
+  Serial.print("SnowPlowTracker initialized with collector host: ");
+  Serial.println(this->collectorHost);
+#endif
 }
 
 /**
