@@ -1,0 +1,27 @@
+#######################################
+# Syntax Coloring Map For SnowPlowTracker
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+SnowPlowTracker	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+initCf	KEYWORD2
+initUrl	KEYWORD2
+setUserId	KEYWORD2
+trackEvent	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+HTTP_SUCCESS LITERAL1
+HTTP_ERROR_CONNECTION_FAILED LITERAL1
+HTTP_ERROR_CALL LITERAL1
+HTTP_ERROR_TIMED_OUT LITERAL1
+HTTP_ERROR_INVALID_RESPONSE LITERAL1

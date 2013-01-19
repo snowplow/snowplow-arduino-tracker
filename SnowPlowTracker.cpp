@@ -35,7 +35,14 @@ public:
 /**
  * Constructor for SnowPlow class.
  *
- * 
+ * @param aEthernet Pointer to the
+ *        EthernetClass (initialised
+ *        outside of this library)
+ * @param aMac The MAC address of the
+ *        Arduino's WiFi or Ethernet
+ *        Shield
+ * @param aAppId The SnowPlow application
+ *        ID
  **/
 SnowPlowTracker::SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, const String aAppId) {  
   this->ethernet = aEthernet;
@@ -44,65 +51,180 @@ SnowPlowTracker::SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, con
 }
 
 /**
- * Initializes the SnowPlow tracker to talk to a collector
- * hosted on CloudFront.
+ * Initializes the SnowPlow tracker to
+ * talk to a collector hosted on
+ * CloudFront.
  *
- * @param aCfSubdomain the subdomain of the CloudFront
- *                     collector e.g. "d3rkrsqld9gmqf"
+ * @param aCfSubdomain The subdomain
+ *        of the CloudFront collector
+ *        e.g. "d3rkrsqgmqf"
  */
 void SnowPlowTracker::initCf(const String aCfSubdomain) {
   String domain = cfSubdomain + String(".cloudfront.net");
   this->init(domain);
 }
 
-/*==============================================================================
- * initUrl
+/**
+ * Initializes the SnowPlow tracker
+ * to speak to a URL-based (self-
+ * hosted) collector.
  *
- * Initializes the SnowPlow tracker to talk to a self-hosted
- * collector on a dedicated domain.
- *
- * Alias for private init() method.
- *=============================================================================*/
+ * @param aHost The hostname of the
+ *        URL hosting the collector
+ *        e.g. tracking.mysite.com
+ */
 void SnowPlowTracker::initUrl(const String aHost) {
   this->init(aHost);
 }
 
-/*==============================================================================
- * setUserId 
- *
+/**
  * Sets the User Id for this Arduino.
  * Overrides the default User Id, which
  * is the Arduino's MAC address.
- *=============================================================================*/
-void SnowPlowTracker::setUserId(const String userId) {
+ *
+ * @param @aUserId The new User Id
+ */
+void SnowPlowTracker::setUserId(const String aUserId) {
   this->userId = userId;
+}
+
+/**
+ * Tracks a structured event to a
+ * SnowPlow collector: version
+ * where the value field is a float.
+ *
+ * @param aCategory The name you supply for
+ *        the group of objects you want to track
+ * @param aAction A string that is uniquely
+ *        paired with each category, and commonly
+ *        used to define the type of user
+ *        interaction for the web object
+ * @param aLabel An optional string
+ *        to provide additional dimensions to the
+ *        event data
+ * @param aProperty An optional string
+ *        describing the object or the action
+ *        performed on it. This might be the
+ *        quantity of an item added to basket
+ * @param aValue A (typically numeric) value that
+ *        you can use to provide numerical data
+ *        about the user event
+ * @return An integer indicating the success/failure
+ *         of logging the event to SnowPlow
+ */ 
+int SnowPlowTracker::trackEvent(
+  const String aCategory,
+  const String aAction,
+  const String aLabel,
+  const String aProperty,
+  const float aValue) const {
+
+  // Cast aValue to String and call appropriate trackEvent
+  trackEvent(aCategory, aAction, aLabel, aProperty, String(aValue));
+}
+
+/**
+ * Tracks a structured event to a
+ * SnowPlow collector: version
+ * where the value field is an int.
+ *
+ * @param aCategory The name you supply for
+ *        the group of objects you want to track
+ * @param aAction A string that is uniquely
+ *        paired with each category, and commonly
+ *        used to define the type of user
+ *        interaction for the web object
+ * @param aLabel An optional string
+ *        to provide additional dimensions to the
+ *        event data
+ * @param aProperty An optional string
+ *        describing the object or the action
+ *        performed on it. This might be the
+ *        quantity of an item added to basket
+ * @param aValue A (typically numeric) value that
+ *        you can use to provide numerical data
+ *        about the user event
+ * @return An integer indicating the success/failure
+ *         of logging the event to SnowPlow
+ */ 
+int SnowPlowTracker::trackEvent(
+  const String aCategory,
+  const String aAction,
+  const String aLabel,
+  const String aProperty,
+  const int aValue) const {
+
+  // Cast aValue to String and call appropriate trackEvent
+  trackEvent(aCategory, aAction, aLabel, aProperty, String(aValue));
+}
+
+/**
+ * Tracks a structured event to a
+ * SnowPlow collector: version
+ * where the value field is a String.
+ *
+ * @param aCategory The name you supply for
+ *        the group of objects you want to track
+ * @param aAction A string that is uniquely
+ *        paired with each category, and commonly
+ *        used to define the type of user
+ *        interaction for the web object
+ * @param aLabel An optional string
+ *        to provide additional dimensions to the
+ *        event data
+ * @param aProperty An optional string
+ *        describing the object or the action
+ *        performed on it. This might be the
+ *        quantity of an item added to basket
+ * @param aValue A (typically numeric) value that
+ *        you can use to provide numerical data
+ *        about the user event
+ * @return An integer indicating the success/failure
+ *         of logging the event to SnowPlow
+ */ 
+int SnowPlowTracker::trackEvent(
+  const String aCategory,
+  const String aAction,
+  const String aLabel,
+  const String aProperty,
+  const String aValue) const {
+
+  Serial.println("Tracking event!");
+  return 0;
 }
 
 private:
 
-/*==============================================================================
- * init 
+/**
+ * Common initialization, called by
+ * both initCf and initUrl.
  *
- * Common initialization, called by both initCf and initUrl.
- *=============================================================================*/
-void SnowPlowTracker::init(const String domain) {
+ * @param aHost The hostname of the
+ *        URL hosting the collector
+ *        e.g. tracking.mysite.com
+ *        or d3rkrsqgmqf.cloudfront.net
+ */
+void SnowPlowTracker::init(const String aHost) {
   // Set trackerUrl and userId
-  this->collectorUrl = domain;
+  this->collectorUrl = aHost;
   this->userId = mac2String(this->mac);
 
   // Boot the Ethernet connection
   this->ethernet->begin(this->mac);
-  delay(1000);
+  delay(1000); // Wait 1 sec
   this->client = new EthernetClient();
 }
 
-/*==============================================================================
- * mac2String 
+/**
+ * Converts a MAC address byte array
+ * into a String. Generated String is
+ * of the format: "00:01:0A:2E:05:0B"
  *
- * Helper to convert a MAC address byte array into a String.
- * Generated String is of the format: "00:01:0A:2E:05:0B"
- *=============================================================================*/
-String SnowPlowTracker::mac2String(const byte* mac) const {
+ * @param aMac The MAC address, in bytes,
+ *             to convert
+ * @return the MAC address as a String
+ */
+String SnowPlowTracker::mac2String(const byte* aMac) const {
   const int macLength = 6;
   String buffer = String();
   for (int i = 0; i < macLength; i++) {
@@ -114,6 +236,8 @@ String SnowPlowTracker::mac2String(const byte* mac) const {
   return buffer;
 }
 
+
+/*
 
 int SnowPlowTracker::trackEvent(const String category, const String action, const String label, const String property, const float value) const {
   // TODO: fix this crap.
@@ -174,3 +298,5 @@ int SnowPlowTracker::trackEvent(const String category, const String action, cons
   // Return updated status code
   return ret;
 }
+
+*/
