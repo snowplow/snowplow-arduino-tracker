@@ -32,7 +32,8 @@ const String SnowPlowTracker::kUserAgent = "Arduino/2.0";
 const String SnowPlowTracker::kVersion = "arduino-0.1.0";
 
 /**
- * Constructor for SnowPlow class.
+ * Constructor for the SnowPlowTracker
+ * class.
  *
  * @param aEthernet Pointer to the
  *        EthernetClass (initialised
