@@ -19,18 +19,13 @@
  * See the Apache License Version 2.0 for the specific language governing permissions and limitations there under.
  */
 
+#include <stdlib.h>
 #include <SPI.h>
 #include "SnowPlowTracker.h"
 #include <Ethernet.h>
 #include <EthernetClient.h>
 
-private:
-
-// Initialize constants
-const char* SnowPlowTracker::kUserAgent = "Arduino/2.0";
-const char* SnowPlowTracker::kVersion = "arduino-0.1.0";
-
-public:
+#define LOGGING
 
 /**
  * Constructor for SnowPlow class.
@@ -46,7 +41,7 @@ public:
  **/
 SnowPlowTracker::SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, const String aAppId) {  
   this->ethernet = aEthernet;
-  this->mac = aMac;
+  this->mac = (byte*)aMac;
   this->appId = aAppId;
 }
 
@@ -60,8 +55,8 @@ SnowPlowTracker::SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, con
  *        e.g. "d3rkrsqgmqf"
  */
 void SnowPlowTracker::initCf(const String aCfSubdomain) {
-  String domain = cfSubdomain + String(".cloudfront.net");
-  this->init(domain);
+  const String host = aCfSubdomain + String(".cloudfront.net");
+  this->init(host);
 }
 
 /**
@@ -84,48 +79,13 @@ void SnowPlowTracker::initUrl(const String aHost) {
  *
  * @param @aUserId The new User Id
  */
-void SnowPlowTracker::setUserId(const String aUserId) {
+void SnowPlowTracker::setUserId(String aUserId) {
   this->userId = aUserId;
 
 #ifdef LOGGING
   Serial.print("SnowPlow User Id updated to: ");
   Serial.println(this->userId);
 #endif
-}
-
-/**
- * Tracks a structured event to a
- * SnowPlow collector: version
- * where the value field is a float.
- *
- * @param aCategory The name you supply for
- *        the group of objects you want to track
- * @param aAction A string that is uniquely
- *        paired with each category, and commonly
- *        used to define the type of user
- *        interaction for the web object
- * @param aLabel An optional string
- *        to provide additional dimensions to the
- *        event data
- * @param aProperty An optional string
- *        describing the object or the action
- *        performed on it. This might be the
- *        quantity of an item added to basket
- * @param aValue A (typically numeric) value that
- *        you can use to provide numerical data
- *        about the user event
- * @return An integer indicating the success/failure
- *         of logging the event to SnowPlow
- */ 
-int SnowPlowTracker::trackEvent(
-  const String aCategory,
-  const String aAction,
-  const String aLabel,
-  const String aProperty,
-  const float aValue) const {
-
-  // Cast aValue to String and call appropriate trackEvent
-  trackEvent(aCategory, aAction, aLabel, aProperty, String(aValue));
 }
 
 /**
@@ -146,7 +106,7 @@ int SnowPlowTracker::trackEvent(
  *        describing the object or the action
  *        performed on it. This might be the
  *        quantity of an item added to basket
- * @param aValue A (typically numeric) value that
+ * @param aValue An integer value that
  *        you can use to provide numerical data
  *        about the user event
  * @return An integer indicating the success/failure
@@ -161,6 +121,82 @@ int SnowPlowTracker::trackEvent(
 
   // Cast aValue to String and call appropriate trackEvent
   trackEvent(aCategory, aAction, aLabel, aProperty, String(aValue));
+}
+
+/**
+ * Tracks a structured event to a
+ * SnowPlow collector: version
+ * where the value field is a float.
+ *
+ * @param aCategory The name you supply for
+ *        the group of objects you want to track
+ * @param aAction A string that is uniquely
+ *        paired with each category, and commonly
+ *        used to define the type of user
+ *        interaction for the web object
+ * @param aLabel An optional string
+ *        to provide additional dimensions to the
+ *        event data
+ * @param aProperty An optional string
+ *        describing the object or the action
+ *        performed on it. This might be the
+ *        quantity of an item added to basket
+ * @param aValue A double value that
+ *        you can use to provide numerical data
+ *        about the user event
+ * @param aValuePrecision How many digits to keep
+ *        after the decimal sign
+ * @return An integer indicating the success/failure
+ *         of logging the event to SnowPlow
+ */
+int SnowPlowTracker::trackEvent(
+  const String aCategory,
+  const String aAction,
+  const String aLabel,
+  const String aProperty,
+  const double aValue,
+  const int aValuePrecision) const {
+
+  // Cast aValue to String and call appropriate trackEvent
+  trackEvent(aCategory, aAction, aLabel, aProperty, double2String(aValue, aValuePrecision));
+}
+
+/**
+ * Tracks a structured event to a
+ * SnowPlow collector: version
+ * where the value field is a float.
+ *
+ * @param aCategory The name you supply for
+ *        the group of objects you want to track
+ * @param aAction A string that is uniquely
+ *        paired with each category, and commonly
+ *        used to define the type of user
+ *        interaction for the web object
+ * @param aLabel An optional string
+ *        to provide additional dimensions to the
+ *        event data
+ * @param aProperty An optional string
+ *        describing the object or the action
+ *        performed on it. This might be the
+ *        quantity of an item added to basket
+ * @param aValue A float value that
+ *        you can use to provide numerical data
+ *        about the user event
+ * @param aValuePrecision How many digits to keep
+ *        after the decimal sign
+ * @return An integer indicating the success/failure
+ *         of logging the event to SnowPlow
+ */
+int SnowPlowTracker::trackEvent(
+  const String aCategory,
+  const String aAction,
+  const String aLabel,
+  const String aProperty,
+  const float aValue,
+  const int aValuePrecision) const {
+
+  // Cast aValue to String and call appropriate trackEvent
+  trackEvent(aCategory, aAction, aLabel, aProperty, double2String(aValue, aValuePrecision));
 }
 
 /**
@@ -181,8 +217,8 @@ int SnowPlowTracker::trackEvent(
  *        describing the object or the action
  *        performed on it. This might be the
  *        quantity of an item added to basket
- * @param aValue A (typically numeric) value that
- *        you can use to provide numerical data
+ * @param aValue A String value that
+ *        you can use to provide non-numerical data
  *        about the user event
  * @return An integer indicating the success/failure
  *         of logging the event to SnowPlow
@@ -201,7 +237,9 @@ int SnowPlowTracker::trackEvent(
   return 0;
 }
 
-private:
+// Initialize constants
+const char* SnowPlowTracker::kUserAgent = "Arduino/2.0";
+const char* SnowPlowTracker::kVersion = "arduino-0.1.0";
 
 /**
  * Common initialization, called by
@@ -213,12 +251,13 @@ private:
  *        or d3rkrsqgmqf.cloudfront.net
  */
 void SnowPlowTracker::init(const String aHost) {
+
   // Set collectorHost and userId
   this->collectorHost = aHost;
   this->userId = mac2String(this->mac);
 
   // Boot the Ethernet connection
-  this->ethernet->begin(this->mac);
+  this->ethernet->begin((byte*)this->mac);
   delay(1000); // Wait 1 sec
   this->client = new EthernetClient();
 
@@ -237,11 +276,11 @@ void SnowPlowTracker::init(const String aHost) {
  *             to convert
  * @return the MAC address as a String
  */
-String SnowPlowTracker::mac2String(const byte* aMac) const {
+String SnowPlowTracker::mac2String(const byte* aMac) {
   const int macLength = 6;
   String buffer = String();
   for (int i = 0; i < macLength; i++) {
-    buffer += String(mac[i], HEX);
+    buffer += String(aMac[i], HEX);
     if (i < macLength - 1) {
       buffer += ":";
     }
@@ -249,6 +288,22 @@ String SnowPlowTracker::mac2String(const byte* aMac) const {
   return buffer;
 }
 
+/**
+ * Converts a double (or a float)
+ * into a String. Generated String is
+ * 1 or more characters long, with the
+ * number of digits after the decimal
+ * point specified by `aPrecision`.
+ *
+ * @param aDbl The double (or float) to
+ *        convert into a String
+ * @return the converted String
+ */
+String SnowPlowTracker::double2String(const double aDouble, const int aPrecision) {
+  char buffer[25];
+  dtostrf(aDouble, 1, aPrecision, buffer);
+  return String(buffer);
+}
 
 /*
 

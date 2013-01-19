@@ -52,37 +52,39 @@ static const int HTTP_ERROR_INVALID_RESPONSE =-4;
  */
 class SnowPlowTracker
 {
-  public:
+ public:
 
-    // Constructor
-    SnowPlow(EthernetClass *aEthernet, const byte* aMac, const String aAppId);
-    
-    // Initialisation options for the HTTP connection
-    void initCf(const String aCfSubdomain);
-    void initUrl(const String aHost);
+  // Constructor
+  SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, const String aAppId);
 
-    // Manually set the 'user' ID
-    void setUserId(const String userId);
-    
-    // Track SnowPlow events
-    int trackEvent(const String aCategory, const String aAction, const String aLabel, const String aProperty, const float aValue) const;
-    int trackEvent(const String aCategory, const String aAction, const String aLabel, const String aProperty, const int aValue) const;
-    int trackEvent(const String aCategory, const String aAction, const String aLabel, const String aProperty, const String aValue) const;
+  // Initialisation options for the HTTP connection
+  void initCf(String aCfSubdomain);
+  void initUrl(String aHost);
 
-  private:
-    static const char* kUserAgent;
-    static const char* kVersion;
+  // Manually set the 'user' ID
+  void setUserId(String userId);
 
-    class EthernetClass* ethernet;
-    class EthernetClient* client;
+  // Track SnowPlow events
+  int trackEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const int aValue = NULL) const;
+  int trackEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const double aValue = NULL, const int aValuePrecision = 2) const;
+  int trackEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const float aValue = NULL, const int aValuePrecision = 2) const;
+  int trackEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const String aValue = NULL) const;
 
-    byte* mac;
-    String appId;
-    String collectorHost;
-    String userId;
+ private:
+  static const char* kUserAgent;
+  static const char* kVersion;
 
-    void init(String aHost);
-    static void mac2String(byte* aMac);
+  class EthernetClass* ethernet;
+  class EthernetClient* client;
+
+  byte* mac;
+  String appId;
+  String collectorHost;
+  String userId;
+
+  void init(String aHost);
+  static String mac2String(const byte* aMac);
+  static String double2String(const double aDbl, const int aPrecision);
 };
 
 #endif

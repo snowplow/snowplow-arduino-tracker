@@ -29,13 +29,13 @@
 byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0xF8, 0xA0 };
 
 // SnowPlow CloudFront collector subdomain
-const char kSnowplowCfSubdomain[] = "d3rkrsqld9gmqf";
+String snowplowCfSubdomain = "d3rkrsqld9gmqf";
 
 // SnowPlow app name
-const char kSnowplowAppName[] = "arduino-tracker-examples";
+String snowplowAppName = "arduino-tracker-examples";
 
 // SnowPlow Tracker
-SnowPlowTracker snowplow(&Ethernet, mac, kSnowplowAppName);
+SnowPlowTracker snowplow(&Ethernet, mac, snowplowAppName);
 
 /*
  * setup() runs once when you turn your
@@ -52,7 +52,7 @@ void setup()
   Serial.begin(9600);
 
   // Setup SnowPlow Arduino tracker
-  snowplow.initCf(kSnowplowCfSubdomain);
+  snowplow.initCf(snowplowCfSubdomain);
 }
 
 /*
