@@ -27,6 +27,10 @@
 
 #define LOGGING
 
+// Initialize constants
+const char* SnowPlowTracker::kUserAgent = "Arduino/2.0";
+const char* SnowPlowTracker::kVersion = "arduino-0.1.0";
+
 /**
  * Constructor for SnowPlow class.
  *
@@ -236,10 +240,6 @@ int SnowPlowTracker::trackEvent(
 
   return 0;
 }
-
-// Initialize constants
-const char* SnowPlowTracker::kUserAgent = "Arduino/2.0";
-const char* SnowPlowTracker::kVersion = "arduino-0.1.0";
 
 /**
  * Common initialization, called by
