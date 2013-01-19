@@ -40,7 +40,9 @@ SnowPlowTracker snowplow(&Ethernet, mac, kSnowplowAppName);
  * Arduino on: use it to initialize and
  * set any initial values.
  *
- * DESC TODO
+ * We just initialize the serial
+ * connection (for debugging) and
+ * the SnowPlow tracker.
  */
 void setup()
 {
@@ -56,7 +58,8 @@ void setup()
  * An empty loop() takes just a few
  * clock cycles to complete.
  *
- * DESC TODO
+ * Every 15 seconds, send a 'ping'
+ * event to SnowPlow.
  */
 void loop()
 {
