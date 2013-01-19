@@ -72,7 +72,7 @@ void loop()
   if (millis() - prevTime >= (15000))
   {
     // Track via SnowPlow: category, action, label, property, value
-    snowplow.trackEvent("examples", "ping", NULL, NULL, NULL);
+    snowplow.trackEvent("examples", "ping");
 
     prevTime = millis();
   }
