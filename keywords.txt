@@ -7,6 +7,7 @@
 #######################################
 
 SnowPlowTracker	KEYWORD1
+name_value_pair KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -20,8 +21,11 @@ trackEvent	KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
-HTTP_SUCCESS LITERAL1
-HTTP_ERROR_CONNECTION_FAILED LITERAL1
-HTTP_ERROR_CALL LITERAL1
-HTTP_ERROR_TIMED_OUT LITERAL1
-HTTP_ERROR_INVALID_RESPONSE LITERAL1
+
+SUCCESS LITERAL1
+ERROR_CONNECTION_FAILED LITERAL1
+ERROR_UNEXPECTED_CALL LITERAL1
+ERROR_TIMED_OUT LITERAL1
+ERROR_INVALID_RESPONSE LITERAL1
+kUserAgent LITERAL1
+kTrackerVersion LITERAL1

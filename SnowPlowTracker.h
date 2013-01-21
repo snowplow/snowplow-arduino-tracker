@@ -68,7 +68,13 @@ class SnowPlowTracker
 
  private:
   static const char* kUserAgent;
-  static const char* kVersion;
+  static const char* kTrackerVersion;
+
+  typedef struct
+  {
+    char* name;
+    char* value;
+  } NameValuePair;
 
   class EthernetClass* ethernet;
   class EthernetClient* client;
@@ -81,6 +87,7 @@ class SnowPlowTracker
   void init(String aHost);
   static String mac2String(const byte* aMac);
   static String double2String(const double aDbl, const int aPrecision);
+  static String nameValues2Querystring(const NameValuePair aNameValues[]);
 };
 
 #endif

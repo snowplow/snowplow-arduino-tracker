@@ -29,7 +29,7 @@
 
 // Initialize constants
 const String SnowPlowTracker::kUserAgent = "Arduino/2.0";
-const String SnowPlowTracker::kVersion = "arduino-0.1.0";
+const String SnowPlowTracker::kTrackerVersion = "arduino-0.1.0";
 
 /**
  * Constructor for the SnowPlowTracker
@@ -239,6 +239,13 @@ int SnowPlowTracker::trackEvent(
   Serial.println("Tracking event!");
 #endif
 
+  NameValuePairs nameValues[] = {
+    { "aid", this->appId },
+    { "tv", this->kTrackerVersion },
+    { "e", "ev" },
+    { NULL, NULL } // Signals the end of our name-value pairs
+  };
+
   return SnowPlowTracker::SUCCESS;
 }
 
@@ -304,6 +311,22 @@ String SnowPlowTracker::double2String(const double aDouble, const int aPrecision
   char buffer[25];
   dtostrf(aDouble, 1, aPrecision, buffer);
   return String(buffer);
+}
+
+/**
+ * Converts a set of name-value pairs
+ * into an HTTP encoded querystring
+ *
+ * @param aParameters The name-value
+ *        pairs to encode and
+ *        concatenate into a GET
+ *        querystring  
+ * @return the GET querystring in
+ *         String form
+ */
+String SnowPlowTracker::nameValues2Querystring(const NameValuePair aNameValues[]) {
+
+  return String("TODO")
 }
 
 /*
