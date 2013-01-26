@@ -242,7 +242,7 @@ int SnowPlowTracker::trackStructEvent(
   Serial.println(aAction);
 #endif
 
-  HttpParameterPair qsNameValues[] = {
+  HttpParameterPair eventPairs[] = {
     { "p", "iot"}, // Internet of things
     { "uid", this->userId },
     { "aid", this->appId },
@@ -265,7 +265,7 @@ int SnowPlowTracker::trackStructEvent(
     { NULL, NULL } // Signals end of array    
   }
 
-  return SnowPlowTracker::SUCCESS;
+  return getURI("/i");
 }
 
 /**
@@ -292,6 +292,24 @@ void SnowPlowTracker::init(const String aHost) {
   Serial.print("SnowPlowTracker initialized with collector host: ");
   Serial.println(this->collectorHost);
 #endif
+}
+
+/**
+ * A wrapper around getUri to send
+ * an event to the SnowPlow collector
+ * via a GET.
+ */
+int SnowPlowTracker::track(HttpParameterPair parameters[]) {
+
+  // TODO: append the below to 
+
+  HttpParameterPair qsNameValues[] = {
+    { "p", "iot"}, // Internet of things
+    { "uid", this->userId },
+    { "aid", this->appId },
+    { "tv", this->kTrackerVersion }
+  }
+
 }
 
 /**
@@ -333,36 +351,29 @@ String SnowPlowTracker::double2String(const double aDouble, const int aPrecision
 }
 
 /**
- * Converts a set of name-value pairs
- * into an HTTP encoded querystring
+ * URL-encodes a string. Using code
+ * taken from:
  *
- * @param aParameters The name-value
- *        pairs to encode and
- *        concatenate into a GET
- *        querystring  
- * @return the GET querystring in
- *         String form
+ * http://hardwarefun.com/tutorials/url-encoding-in-arduino
+ *
+ * @param aMsg The characters to
+ *        URL-encode.
+ * @return the encoded String
  */
-String SnowPlowTracker::nameValues2Querystring(const NameValuePair aNameValues[]) {
-
-  return String("TODO")
-}
-
-// http://hardwarefun.com/tutorials/url-encoding-in-arduino
 String SnowPlowTracker::urlEncode(const char* aMsg)
 {
   const char *hex = "0123456789abcdef";
   String encodedMsg = "";
 
   while (*aMsg!='\0') {
-      if( ('a' <= *aMsg && *aMsg <= 'z')
-              || ('A' <= *aMsg && *aMsg <= 'Z')
-              || ('0' <= *aMsg && *aMsg <= '9') ) {
-          encodedMsg += *aMsg;
+      if (   ('a' <= *aMsg && *aMsg <= 'z')
+          || ('A' <= *aMsg && *aMsg <= 'Z')
+          || ('0' <= *aMsg && *aMsg <= '9')) {
+        encodedMsg += *aMsg;
       } else {
-          encodedMsg += '%';
-          encodedMsg += hex[*aMsg >> 4];
-          encodedMsg += hex[*aMsg & 15];
+        encodedMsg += '%';
+        encodedMsg += hex[*aMsg >> 4];
+        encodedMsg += hex[*aMsg & 15];
       }
       aMsg++;
   }
