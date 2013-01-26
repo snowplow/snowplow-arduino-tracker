@@ -28,6 +28,7 @@
 #define LOGGING
 
 // Initialize constants
+const String SnowPlowTracker::kTrackerPlatform = "iot"; // Internet of things
 const String SnowPlowTracker::kUserAgent = "Arduino/2.0";
 const String SnowPlowTracker::kTrackerVersion = "arduino-0.1.0";
 
@@ -243,7 +244,7 @@ int SnowPlowTracker::trackStructEvent(
 #endif
 
   HttpParameterPair qsNameValues[] = {
-    { "p", "iot"}, // Internet of things
+    { "p", this->kTrackerPlatform },
     { "uid", this->userId },
     { "aid", this->appId },
     { "tv", this->kTrackerVersion },
