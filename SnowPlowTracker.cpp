@@ -28,8 +28,8 @@
 #define LOGGING
 
 // Initialize constants
-const String SnowPlowTracker::kTrackerPlatform = "iot"; // Internet of things
 const String SnowPlowTracker::kUserAgent = "Arduino/2.0";
+const String SnowPlowTracker::kTrackerPlatform = "iot"; // Internet of things
 const String SnowPlowTracker::kTrackerVersion = "arduino-0.1.0";
 
 /**
