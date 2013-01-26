@@ -60,21 +60,33 @@ class SnowPlowTracker
   // Manually set the 'user' ID
   void setUserId(String userId);
 
-  // Track SnowPlow events
-  int trackEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const int aValue = NULL) const;
-  int trackEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const double aValue = NULL, const int aValuePrecision = 2) const;
-  int trackEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const float aValue = NULL, const int aValuePrecision = 2) const;
-  int trackEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const String aValue = NULL) const;
+  // Track structured SnowPlow events
+  int trackStructEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const int aValue = NULL) const;
+  int trackStructEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const double aValue = NULL, const int aValuePrecision = 2) const;
+  int trackStructEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const float aValue = NULL, const int aValuePrecision = 2) const;
+  int trackStructEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const String aValue = NULL) const;
 
  private:
   static const char* kUserAgent;
   static const char* kTrackerVersion;
 
+  // Struct to hold either a querystring
+  // name-value pair or a header: value pair
   typedef struct
   {
     char* name;
     char* value;
-  } NameValuePair;
+  } HttpParameterPair;
+
+  // Struct to store the uriEncoder and the
+  // handle to SnowPlowTracker
+  typedef struct
+  {
+    HTTPClient* SnowPlowTracker;
+    uint8_t encode;
+  #define URI_ENCODE _BV(0)
+  #define URI_ENCODE_RESERVED _BV(1)
+  } HttpStreamUdata;
 
   class EthernetClass* ethernet;
   class EthernetClient* client;

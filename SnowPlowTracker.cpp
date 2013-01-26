@@ -117,7 +117,7 @@ void SnowPlowTracker::setUserId(String aUserId) {
  * @return An integer indicating the success/failure
  *         of logging the event to SnowPlow
  */ 
-int SnowPlowTracker::trackEvent(
+int SnowPlowTracker::trackStructEvent(
   const String aCategory,
   const String aAction,
   const String aLabel,
@@ -125,7 +125,7 @@ int SnowPlowTracker::trackEvent(
   const int aValue) const {
 
   // Cast aValue to String and call appropriate trackEvent
-  trackEvent(aCategory, aAction, aLabel, aProperty, String(aValue));
+  trackStructEvent(aCategory, aAction, aLabel, aProperty, String(aValue));
 }
 
 /**
@@ -154,7 +154,7 @@ int SnowPlowTracker::trackEvent(
  * @return An integer indicating the success/failure
  *         of logging the event to SnowPlow
  */
-int SnowPlowTracker::trackEvent(
+int SnowPlowTracker::trackStructEvent(
   const String aCategory,
   const String aAction,
   const String aLabel,
@@ -163,7 +163,7 @@ int SnowPlowTracker::trackEvent(
   const int aValuePrecision) const {
 
   // Cast aValue to String and call appropriate trackEvent
-  trackEvent(aCategory, aAction, aLabel, aProperty, double2String(aValue, aValuePrecision));
+  trackStructEvent(aCategory, aAction, aLabel, aProperty, double2String(aValue, aValuePrecision));
 }
 
 /**
@@ -192,7 +192,7 @@ int SnowPlowTracker::trackEvent(
  * @return An integer indicating the success/failure
  *         of logging the event to SnowPlow
  */
-int SnowPlowTracker::trackEvent(
+int SnowPlowTracker::trackStructEvent(
   const String aCategory,
   const String aAction,
   const String aLabel,
@@ -201,7 +201,7 @@ int SnowPlowTracker::trackEvent(
   const int aValuePrecision) const {
 
   // Cast aValue to String and call appropriate trackEvent
-  trackEvent(aCategory, aAction, aLabel, aProperty, double2String(aValue, aValuePrecision));
+  trackStructEvent(aCategory, aAction, aLabel, aProperty, double2String(aValue, aValuePrecision));
 }
 
 /**
@@ -228,7 +228,7 @@ int SnowPlowTracker::trackEvent(
  * @return An integer indicating the success/failure
  *         of logging the event to SnowPlow
  */ 
-int SnowPlowTracker::trackEvent(
+int SnowPlowTracker::trackStructEvent(
   const String aCategory,
   const String aAction,
   const String aLabel,
@@ -236,15 +236,34 @@ int SnowPlowTracker::trackEvent(
   const String aValue) const {
 
 #ifdef LOGGING
-  Serial.println("Tracking event!");
+  Serial.print("Tracking structured event ");
+  Serial.print(aCategory);
+  Serial.print(" ");
+  Serial.println(aAction);
 #endif
 
-  NameValuePairs nameValues[] = {
+  HttpParameterPair qsNameValues[] = {
+    { "p", "iot"}, // Internet of things
+    { "uid", this->userId },
     { "aid", this->appId },
     { "tv", this->kTrackerVersion },
-    { "e", "ev" },
-    { NULL, NULL } // Signals the end of our name-value pairs
+
+    { "e", "c" },
+    { "ev_ca", aCategory },
+    { "ev_ac", aAction },
+    { "ev_la", aLabel },
+    { "ev_pr", aProperty },
+    { "ev_va", aValue },
+    
+    { NULL, NULL } // Signals end of array
   };
+
+  HttpParameterPair headers[] = {
+    { "Host", this->collectorUrl },
+    { "User-Agent", kUserAgent },
+
+    { NULL, NULL } // Signals end of array    
+  }
 
   return SnowPlowTracker::SUCCESS;
 }
@@ -328,6 +347,31 @@ String SnowPlowTracker::nameValues2Querystring(const NameValuePair aNameValues[]
 
   return String("TODO")
 }
+
+// http://hardwarefun.com/tutorials/url-encoding-in-arduino
+String SnowPlowTracker::urlEncode(const char* aMsg)
+{
+  const char *hex = "0123456789abcdef";
+  String encodedMsg = "";
+
+  while (*aMsg!='\0') {
+      if( ('a' <= *aMsg && *aMsg <= 'z')
+              || ('A' <= *aMsg && *aMsg <= 'Z')
+              || ('0' <= *aMsg && *aMsg <= '9') ) {
+          encodedMsg += *aMsg;
+      } else {
+          encodedMsg += '%';
+          encodedMsg += hex[*aMsg >> 4];
+          encodedMsg += hex[*aMsg & 15];
+      }
+      aMsg++;
+  }
+  return encodedMsg;
+}
+
+FILE* -> ret val
+HTTPClient::getURI(char* uri, http_client_parameter parameters[],
+    http_client_parameter headers[])
 
 /*
 
