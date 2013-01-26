@@ -68,6 +68,7 @@ class SnowPlowTracker
 
  private:
   static const char* kUserAgent;
+  static const char* kTrackerPlatform;
   static const char* kTrackerVersion;
 
   // Struct to hold either a querystring
