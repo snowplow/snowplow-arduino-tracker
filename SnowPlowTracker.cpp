@@ -419,28 +419,28 @@ String SnowPlowTracker::urlEncode(const char* aMsg)
 int SnowPlowTracker::getUri(const String aHost, const String aPort, const String aPath, const QuerystringPair aPairs[]) {
 
   // Connect to the host
-  if (client->connect(aHost, aPort)) {
-    if (client->connected()) {
+  if (this->client->connect(aHost, aPort)) {
+    if (this->client->connected()) {
 
       // Build our GET line from:
       // 1. The URI path... 
-      client->print("GET ");
-      client->print(aPath);
+      this->client->print("GET ");
+      this->client->print(aPath);
 
       // 2. The querystring name-value pairs
       // TODO
 
       // 3. Finish the GET definition
-      client->println(" HTTP/1.1");
+      this->client->println(" HTTP/1.1");
 
       // Headers
-      client->print("Host: ");
-      client->println(aHost);
+      this->client->print("Host: ");
+      this->client->println(aHost);
 
-      client->print("User-Agent: ");
-      client->println(this->kUserAgent);
+      this->client->print("User-Agent: ");
+      this->client->println(this->kUserAgent);
 
-      client->println();
+      this->client->println();
       // End of headers
 
       // TODO: check return value
