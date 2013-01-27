@@ -312,11 +312,10 @@ int SnowPlowTracker::track(HttpParameterPair aEventPairs[]) {
   HttpParameterPair headers[] = {
     { "Host", this->collectorUrl },
     { "User-Agent", kUserAgent },
-
     { NULL, NULL } // Signals end of array    
   }
 
-  return getURI("/i", allPairs, headers);
+  return getUri("/i", pairs, headers);
 }
 
 /**
