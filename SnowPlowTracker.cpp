@@ -29,6 +29,7 @@
 
 // Initialize constants
 const String SnowPlowTracker::kUserAgent = "Arduino/2.0";
+const String SnowPlowTracker::kTrackerPlatform = "iot"; // Internet of things
 const String SnowPlowTracker::kTrackerVersion = "arduino-0.1.0";
 
 /**
@@ -243,29 +244,16 @@ int SnowPlowTracker::trackStructEvent(
 #endif
 
   HttpParameterPair eventPairs[] = {
-    { "p", "iot"}, // Internet of things
-    { "uid", this->userId },
-    { "aid", this->appId },
-    { "tv", this->kTrackerVersion },
-
     { "e", "c" },
     { "ev_ca", aCategory },
     { "ev_ac", aAction },
     { "ev_la", aLabel },
     { "ev_pr", aProperty },
     { "ev_va", aValue },
-    
     { NULL, NULL } // Signals end of array
   };
 
-  HttpParameterPair headers[] = {
-    { "Host", this->collectorUrl },
-    { "User-Agent", kUserAgent },
-
-    { NULL, NULL } // Signals end of array    
-  }
-
-  return getURI("/i");
+  return track(eventPairs);
 }
 
 /**
@@ -298,18 +286,37 @@ void SnowPlowTracker::init(const String aHost) {
  * A wrapper around getUri to send
  * an event to the SnowPlow collector
  * via a GET.
+ *
+ * @param aEventPairs the name-value
+ *        pairs specific to this event
+ *        to add to our GET
+ * @return An integer indicating the success/failure
+ *         of logging the event to SnowPlow
  */
-int SnowPlowTracker::track(HttpParameterPair parameters[]) {
+int SnowPlowTracker::track(HttpParameterPair aEventPairs[]) {
 
-  // TODO: append the below to 
+  // First combine the two sets of events
+  int pairCount = countPairs(aEventPairs);
 
-  HttpParameterPair qsNameValues[] = {
-    { "p", "iot"}, // Internet of things
-    { "uid", this->userId },
-    { "aid", this->appId },
-    { "tv", this->kTrackerVersion }
+  HttpParameterPair pairs[4 + pairCount];
+  pairs[0] = { "p", this->kTrackerPlatform };
+  pairs[1] = { "uid", this->userId };
+  pairs[2] = { "aid", this->appId };
+  pairs[3] = { "tv", this->kTrackerVersion };
+
+  for (i = 0; i < pairCount; i++) {
+    pairs[i + 4] = &aEventPairs[i]
   }
 
+  // Now define the headers
+  HttpParameterPair headers[] = {
+    { "Host", this->collectorUrl },
+    { "User-Agent", kUserAgent },
+
+    { NULL, NULL } // Signals end of array    
+  }
+
+  return getURI("/i", allPairs, headers);
 }
 
 /**
@@ -331,6 +338,23 @@ String SnowPlowTracker::mac2String(const byte* aMac) {
     }
   }
   return buffer;
+}
+
+/**
+ * Returns the length of an array
+ * of HttpParameterPairs. Assumes
+ * the array ends with a sentinel
+ * value of NULL.
+ *
+ * @param aPairs The HttpParameterPairs
+ *        to count
+ * @return the number of pairs in the
+ *         array
+ */
+int SnowPlowTracker::countPairs(HttpParameterPair aPairs[]) {
+  char* p = aPairs;
+  for (; *p != NULL; ++p) {}
+  return p - aPairs;
 }
 
 /**

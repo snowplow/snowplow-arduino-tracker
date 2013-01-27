@@ -68,6 +68,7 @@ class SnowPlowTracker
 
  private:
   static const char* kUserAgent;
+  static const char* kTrackerPlatform;
   static const char* kTrackerVersion;
 
   // Struct to hold either a querystring
@@ -77,16 +78,6 @@ class SnowPlowTracker
     char* name;
     char* value;
   } HttpParameterPair;
-
-  // Struct to store the uriEncoder and the
-  // handle to SnowPlowTracker
-  typedef struct
-  {
-    HTTPClient* SnowPlowTracker;
-    uint8_t encode;
-  #define URI_ENCODE _BV(0)
-  #define URI_ENCODE_RESERVED _BV(1)
-  } HttpStreamUdata;
 
   class EthernetClass* ethernet;
   class EthernetClient* client;
