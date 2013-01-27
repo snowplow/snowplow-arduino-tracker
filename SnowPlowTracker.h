@@ -89,12 +89,12 @@ class SnowPlowTracker
 
   void init(String aHost);
   int SnowPlowTracker::track(const QuerystringPair aEventPairs[]);
-  
+  int SnowPlowTracker::getUri(const String aHost, const String aPort, const String aPath, const QuerystringPair aPairs[]);
+
   static String mac2String(const byte* aMac);
   static String double2String(const double aDbl, const int aPrecision);
   static int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]);
   static String SnowPlowTracker::urlEncode(const char* aMsg);
-  static int SnowPlowTracker::getUri(const String aHost, const String aPort, const String aPath, const QuerystringPair aPairs[]);
 };
 
 #endif
