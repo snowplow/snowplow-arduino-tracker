@@ -67,17 +67,17 @@ class SnowPlowTracker
   int trackStructEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const String aValue = NULL) const;
 
  private:
-  static const char* kUserAgent;
-  static const char* kTrackerPlatform;
-  static const char* kTrackerVersion;
+  static const String kUserAgent;
+  static const String kTrackerPlatform;
+  static const String kTrackerVersion;
+  static const int kCollectorPort = 80;
 
-  // Struct to hold either a querystring
-  // name-value pair or a header: value pair
+  // Struct to hold a querystring name-value pair
   typedef struct
   {
     char* name;
     char* value;
-  } HttpParameterPair;
+  } QuerystringPair;
 
   class EthernetClass* ethernet;
   class EthernetClient* client;
@@ -88,9 +88,13 @@ class SnowPlowTracker
   String userId;
 
   void init(String aHost);
+  int SnowPlowTracker::track(const QuerystringPair aEventPairs[]);
+  
   static String mac2String(const byte* aMac);
   static String double2String(const double aDbl, const int aPrecision);
-  static String nameValues2Querystring(const NameValuePair aNameValues[]);
+  static int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]);
+  static String SnowPlowTracker::urlEncode(const char* aMsg);
+  static int SnowPlowTracker::getUri(const String aHost, const String aPort, const String aPath, const QuerystringPair aPairs[]);
 };
 
 #endif

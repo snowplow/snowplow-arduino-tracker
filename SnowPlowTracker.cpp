@@ -2,7 +2,7 @@
  * SnowPlow Arduino Tracker
  *
  * @description Arduino tracker for SnowPlow
- * @version     0.0.1
+ * @version     0.1.0
  * @author      Alex Dean
  * @copyright   SnowPlow Analytics Ltd
  * @license     Apache License Version 2.0
@@ -25,7 +25,7 @@
 #include <Ethernet.h>
 #include <EthernetClient.h>
 
-#define LOGGING
+#define LOGGING // Switch off before release
 
 // Initialize constants
 const String SnowPlowTracker::kUserAgent = "Arduino/2.0";
@@ -126,7 +126,7 @@ int SnowPlowTracker::trackStructEvent(
   const int aValue) const {
 
   // Cast aValue to String and call appropriate trackEvent
-  trackStructEvent(aCategory, aAction, aLabel, aProperty, String(aValue));
+  return this->trackStructEvent(aCategory, aAction, aLabel, aProperty, String(aValue));
 }
 
 /**
@@ -164,7 +164,7 @@ int SnowPlowTracker::trackStructEvent(
   const int aValuePrecision) const {
 
   // Cast aValue to String and call appropriate trackEvent
-  trackStructEvent(aCategory, aAction, aLabel, aProperty, double2String(aValue, aValuePrecision));
+  return this->trackStructEvent(aCategory, aAction, aLabel, aProperty, double2String(aValue, aValuePrecision));
 }
 
 /**
@@ -202,7 +202,7 @@ int SnowPlowTracker::trackStructEvent(
   const int aValuePrecision) const {
 
   // Cast aValue to String and call appropriate trackEvent
-  trackStructEvent(aCategory, aAction, aLabel, aProperty, double2String(aValue, aValuePrecision));
+  return this->trackStructEvent(aCategory, aAction, aLabel, aProperty, double2String(aValue, aValuePrecision));
 }
 
 /**
@@ -243,7 +243,7 @@ int SnowPlowTracker::trackStructEvent(
   Serial.println(aAction);
 #endif
 
-  HttpParameterPair eventPairs[] = {
+  const QuerystringPair eventPairs[] = {
     { "e", "c" },
     { "ev_ca", aCategory },
     { "ev_ac", aAction },
@@ -253,7 +253,7 @@ int SnowPlowTracker::trackStructEvent(
     { NULL, NULL } // Signals end of array
   };
 
-  return track(eventPairs);
+  return this->track(eventPairs);
 }
 
 /**
@@ -290,32 +290,26 @@ void SnowPlowTracker::init(const String aHost) {
  * @param aEventPairs the name-value
  *        pairs specific to this event
  *        to add to our GET
- * @return An integer indicating the success/failure
- *         of logging the event to SnowPlow
+ * @return An integer indicating the
+ *         success/failure of logging
+ *         the event to SnowPlow
  */
-int SnowPlowTracker::track(HttpParameterPair aEventPairs[]) {
+int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) {
 
   // First combine the two sets of events
-  int pairCount = countPairs(aEventPairs);
+  const int eventPairCount = countPairs(aEventPairs);
 
-  HttpParameterPair pairs[4 + pairCount];
-  pairs[0] = { "p", this->kTrackerPlatform };
-  pairs[1] = { "uid", this->userId };
-  pairs[2] = { "aid", this->appId };
-  pairs[3] = { "tv", this->kTrackerVersion };
+  QuerystringPair qsPairs[4 + eventPairCount];
+  qsPairs[0] = { "p", this->kTrackerPlatform };
+  qsPairs[1] = { "uid", this->userId };
+  qsPairs[2] = { "aid", this->appId };
+  qsPairs[3] = { "tv", this->kTrackerVersion };
 
-  for (i = 0; i < pairCount; i++) {
-    pairs[i + 4] = &aEventPairs[i]
+  for (i = 0; i < eventPairCount; i++) {
+    qsPairs[i + 4] = &aEventPairs[i]
   }
 
-  // Now define the headers
-  HttpParameterPair headers[] = {
-    { "Host", this->collectorUrl },
-    { "User-Agent", kUserAgent },
-    { NULL, NULL } // Signals end of array    
-  }
-
-  return getUri("/i", pairs, headers);
+  return this->getUri(this->collectorHost, this->kCollectorPort, "/i", qsPairs);
 }
 
 /**
@@ -341,16 +335,16 @@ String SnowPlowTracker::mac2String(const byte* aMac) {
 
 /**
  * Returns the length of an array
- * of HttpParameterPairs. Assumes
+ * of QuerystringPairs. Assumes
  * the array ends with a sentinel
  * value of NULL.
  *
- * @param aPairs The HttpParameterPairs
+ * @param aPairs The QuerystringPairs
  *        to count
  * @return the number of pairs in the
  *         array
  */
-int SnowPlowTracker::countPairs(HttpParameterPair aPairs[]) {
+int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
   char* p = aPairs;
   for (; *p != NULL; ++p) {}
   return p - aPairs;
@@ -388,85 +382,72 @@ String SnowPlowTracker::urlEncode(const char* aMsg)
   const char *hex = "0123456789abcdef";
   String encodedMsg = "";
 
-  while (*aMsg!='\0') {
-      if (   ('a' <= *aMsg && *aMsg <= 'z')
-          || ('A' <= *aMsg && *aMsg <= 'Z')
-          || ('0' <= *aMsg && *aMsg <= '9')) {
-        encodedMsg += *aMsg;
-      } else {
-        encodedMsg += '%';
-        encodedMsg += hex[*aMsg >> 4];
-        encodedMsg += hex[*aMsg & 15];
-      }
-      aMsg++;
+  while (*aMsg != '\0') {
+    if (   ('a' <= *aMsg && *aMsg <= 'z')
+        || ('A' <= *aMsg && *aMsg <= 'Z')
+        || ('0' <= *aMsg && *aMsg <= '9')) {
+      encodedMsg += *aMsg;
+    } else {
+      encodedMsg += '%';
+      encodedMsg += hex[*aMsg >> 4];
+      encodedMsg += hex[*aMsg & 15];
+    }
+    aMsg++;
   }
   return encodedMsg;
 }
 
-FILE* -> ret val
-HTTPClient::getURI(char* uri, http_client_parameter parameters[],
-    http_client_parameter headers[])
+/**
+ * Performs a GET against the
+ * specified URI, passing in
+ * the given parameters and
+ * headers.
+ *
+ * @param aHost The hostname of
+ *        the URI to GET
+ * @param aPort The port of the
+ *        URI to GET
+ * @param aPath The path of the
+ *        URI to GET
+ * @param aParameters The name-
+ *        value pairs to append
+ *        on the querystring
+ * @return An integer indicating the
+ *         success/failure of logging
+ *         the event to SnowPlow
+ */
+int SnowPlowTracker::getUri(const String aHost, const String aPort, const String aPath, const QuerystringPair aPairs[]) {
 
-/*
-
-int SnowPlowTracker::trackEvent(const String category, const String action, const String label, const String property, const float value) const {
-  // TODO: fix this crap.
-  char rxdata[150];
-  int ret = 0;
-  int stringPos = 0;
-  boolean DataRx = false;
-  boolean RxLoop = true;
-  char c;
-  unsigned long timeout_time = 0;
-  unsigned long time_now = 0;
-  unsigned long timeout = 3000; // 3 seconds
-  String myDataString = ""; // Allocate for actual data sent
-
-  if (client->connect(serverName,80)) {
+  // Connect to the host
+  if (client->connect(aHost, aPort)) {
     if (client->connected()) {
 
-      client->println("GET /i HTTP/1.1");
+      // Build our GET line from:
+      // 1. The URI path... 
+      client->print("GET ");
+      client->print(aPath);
 
+      // 2. The querystring name-value pairs
+      // TODO
+
+      // 3. Finish the GET definition
+      client->println(" HTTP/1.1");
+
+      // Headers
       client->print("Host: ");
-      client->println(this->collectorUrl);
+      client->println(aHost);
 
       client->print("User-Agent: ");
-      client->println(kUserAgent);
+      client->println(this->kUserAgent);
 
       client->println();
+      // End of headers
 
-      
-      // TODO: check if we need more headers.
-
-      // Read from the nic
-      //
-      timeout_time = millis()+ timeout; 
-      while ((timeout_time > time_now) && RxLoop) { 
-        if (client->available()) {
-          if (!DataRx)
-            DataRx= true;          
-          c = client->read();
-          rxdata[stringPos] = c;          
-          stringPos += 1;
-        } else {
-          rxdata[stringPos] = 0;
-
-          if (DataRx) {
-            DataRx= false;
-            RxLoop = false;
-
-            ret=1;
-          }
-        }//else
-        time_now = millis();
-      }// while ((timeout_time > time_now) && RxLoop) {
-
-      client->stop();
+      // TODO: check return value
+      // https://github.com/exosite-garage/arduino_exosite_library/blob/master/Exosite.cpp
     }
-  }// if (client->connect(serverName,80)) {
-  
-  // Return updated status code
-  return ret;
-}
+  }
 
-*/
+  // Return updated status code
+  return SnowPlowTracker::SUCCESS;
+}
