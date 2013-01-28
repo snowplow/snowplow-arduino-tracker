@@ -309,6 +309,7 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
   for (int i = 0; i < eventPairCount; i++) {
     qsPairs[i + 4].name = aEventPairs[i].name;
     qsPairs[i + 4].value = aEventPairs[i].value;
+  }
 
   return this->getUri(this->collectorHost, this->kCollectorPort, "/i", qsPairs);
 }
