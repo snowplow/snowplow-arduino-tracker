@@ -347,7 +347,7 @@ String SnowPlowTracker::mac2String(const byte* aMac) {
  *         array
  */
 int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
-  int i = 0;
+  int i = 1;
   while (aPairs[i].name != NULL) {
     i++;
   }
