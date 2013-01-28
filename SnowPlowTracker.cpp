@@ -294,20 +294,21 @@ void SnowPlowTracker::init(const String aHost) {
  *         success/failure of logging
  *         the event to SnowPlow
  */
-int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) {
+int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
 
   // First combine the two sets of events
   const int eventPairCount = countPairs(aEventPairs);
 
-  QuerystringPair qsPairs[4 + eventPairCount];
-  qsPairs[0] = { "p", this->kTrackerPlatform };
-  qsPairs[1] = { "uid", this->userId };
-  qsPairs[2] = { "aid", this->appId };
-  qsPairs[3] = { "tv", this->kTrackerVersion };
+  QuerystringPair qsPairs[4 + this->kMaxEventPairs] = {
+    { "p", this->kTrackerPlatform },
+    { "uid", this->userId },
+    { "aid", this->appId },
+    { "tv", this->kTrackerVersion }
+  };
 
-  for (i = 0; i < eventPairCount; i++) {
-    qsPairs[i + 4] = &aEventPairs[i]
-  }
+  for (int i = 0; i < eventPairCount; i++) {
+    qsPairs[i + 4].name = aEventPairs[i].name;
+    qsPairs[i + 4].value = aEventPairs[i].value;
 
   return this->getUri(this->collectorHost, this->kCollectorPort, "/i", qsPairs);
 }
@@ -345,9 +346,11 @@ String SnowPlowTracker::mac2String(const byte* aMac) {
  *         array
  */
 int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
-  char* p = aPairs;
-  for (; *p != NULL; ++p) {}
-  return p - aPairs;
+  int i = 0;
+  while (aPairs[i].name != NULL) {
+    i++;
+  }
+  return i;
 }
 
 /**
@@ -416,10 +419,18 @@ String SnowPlowTracker::urlEncode(const char* aMsg)
  *         success/failure of logging
  *         the event to SnowPlow
  */
-int SnowPlowTracker::getUri(const String aHost, const String aPort, const String aPath, const QuerystringPair aPairs[]) {
+int SnowPlowTracker::getUri(
+  const String aHost,
+  const int aPort,
+  const String aPath,
+  const QuerystringPair aPairs[]) const {
+
+  // String -> const char*
+  char host[sizeof(aHost)];
+  aHost.toCharArray(host, sizeof(host));
 
   // Connect to the host
-  if (this->client->connect(aHost, aPort)) {
+  if (this->client->connect(host, aPort)) {
     if (this->client->connected()) {
 
       // Build our GET line from:

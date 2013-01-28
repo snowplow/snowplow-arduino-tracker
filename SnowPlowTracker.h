@@ -71,12 +71,13 @@ class SnowPlowTracker
   static const String kTrackerPlatform;
   static const String kTrackerVersion;
   static const int kCollectorPort = 80;
+  static const int kMaxEventPairs = 7;
 
   // Struct to hold a querystring name-value pair
   typedef struct
   {
-    char* name;
-    char* value;
+    String name;
+    String value;
   } QuerystringPair;
 
   class EthernetClass* ethernet;
@@ -88,8 +89,8 @@ class SnowPlowTracker
   String userId;
 
   void init(String aHost);
-  int track(const QuerystringPair aEventPairs[]);
-  int getUri(const String aHost, const String aPort, const String aPath, const QuerystringPair aPairs[]);
+  int track(const QuerystringPair aEventPairs[]) const;
+  int getUri(const String aHost, const int aPort, const String aPath, const QuerystringPair aPairs[]) const;
 
   static String mac2String(const byte* aMac);
   static String double2String(const double aDbl, const int aPrecision);
