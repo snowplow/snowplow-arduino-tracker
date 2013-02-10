@@ -86,6 +86,7 @@ class SnowPlowTracker
   byte* mac;
   String appId;
   String collectorHost;
+  String macAddress;
   String userId;
 
   void init(String aHost);

@@ -79,9 +79,7 @@ void SnowPlowTracker::initUrl(const String aHost) {
 }
 
 /**
- * Sets the User Id for this Arduino.
- * Overrides the default User Id, which
- * is the Arduino's MAC address.
+ * Sets the User Id.
  *
  * @param @aUserId The new User Id
  */
@@ -269,7 +267,7 @@ void SnowPlowTracker::init(const String aHost) {
 
   // Set collectorHost and userId
   this->collectorHost = aHost;
-  this->userId = mac2String(this->mac);
+  this->macAddress = mac2String(this->mac);
 
   // Boot the Ethernet connection
   this->ethernet->begin((byte*)this->mac);
@@ -298,17 +296,19 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
 
   // First combine the two sets of events
   const int eventPairCount = countPairs(aEventPairs);
+  const int fixedPairCount = 5;
 
-  QuerystringPair qsPairs[4 + this->kMaxEventPairs] = {
+  QuerystringPair qsPairs[fixedPairCount + this->kMaxEventPairs] = {
     { "p", this->kTrackerPlatform },
+    { "mac", this->macAddress },
     { "uid", this->userId },
     { "aid", this->appId },
     { "tv", this->kTrackerVersion }
   };
 
   for (int i = 0; i < eventPairCount; i++) {
-    qsPairs[i + 4].name = aEventPairs[i].name;
-    qsPairs[i + 4].value = aEventPairs[i].value;
+    qsPairs[fixedPairCount + i].name = aEventPairs[i].name;
+    qsPairs[fixedPairCount + i].value = aEventPairs[i].value;
   }
 
   return this->getUri(this->collectorHost, this->kCollectorPort, "/i", qsPairs);
@@ -437,13 +437,31 @@ int SnowPlowTracker::getUri(
       // Build our GET line from:
       // 1. The URI path... 
       this->client->print("GET ");
+      Serial.print();
       this->client->print(aPath);
+      Serial.print();
 
       // 2. The querystring name-value pairs
-      // TODO
+      if (aPairs != NULL) {
+        char idx = 0;
+        QuerystringPair* pair = &aPairs[0];
+        while (pair->name != NULL) {
+          if (idx > 0) {
+            this->client->print("&");
+                  Serial.print("&");
+          }
+          this->client->print(pair->name);
+          Serial.print(pair->name);
+          this->client->print("=");
+          Serial.print("=");
+          this->client->print(urlEncode(pair->value));
+          Serial.print(urlEncode(pair->value));
+          pair = &aPairs[++idx];
+        }
 
       // 3. Finish the GET definition
       this->client->println(" HTTP/1.1");
+      Serial.print(" HTTP/1.1");
 
       // Headers
       this->client->print("Host: ");
