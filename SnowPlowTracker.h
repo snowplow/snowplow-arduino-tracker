@@ -51,52 +51,53 @@ class SnowPlowTracker
   };
 
   // Constructor
-  SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, const String aAppId);
+  SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, const char *aAppId);
 
   // Initialisation options for the HTTP connection
-  void initCf(const String aCfSubdomain);
-  void initUrl(const String aHost);
+  void initCf(const char *aCfSubdomain);
+  void initUrl(const char *aHost);
 
   // Manually set the 'user' ID
-  void setUserId(String userId);
+  void setUserId(char *userId);
 
   // Track structured SnowPlow events
-  int trackStructEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const int aValue = NULL) const;
-  int trackStructEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const double aValue = NULL, const int aValuePrecision = 2) const;
-  int trackStructEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const float aValue = NULL, const int aValuePrecision = 2) const;
-  int trackStructEvent(const String aCategory, const String aAction, const String aLabel = NULL, const String aProperty = NULL, const String aValue = NULL) const;
+  int trackStructEvent(const char *aCategory, const char *aAction, const char *aLabel, const char *aProperty, const int aValue) const;
+  int trackStructEvent(const char *aCategory, const char *aAction, const char *aLabel, const char *aProperty, const double aValue, const int aValuePrecision = 2) const;
+  int trackStructEvent(const char *aCategory, const char *aAction, const char *aLabel, const char *aProperty, const float aValue, const int aValuePrecision = 2) const;
+  int trackStructEvent(const char *aCategory, const char *aAction, const char *aLabel = NULL, const char *aProperty = NULL, const char *aValue = NULL) const;
 
  private:
-  static const String kUserAgent;
-  static const String kTrackerPlatform;
-  static const String kTrackerVersion;
+  static const char *kUserAgent;
+  static const char *kTrackerPlatform;
+  static const char *kTrackerVersion;
   static const int kCollectorPort = 80;
   static const int kMaxEventPairs = 7;
 
-  // Struct to hold a querystring name-value pair
+  // Struct to hold a querychar *name-value pair
   typedef struct
   {
-    String name;
-    String value;
+    char* name;
+    char* value;
   } QuerystringPair;
 
   class EthernetClass* ethernet;
   class EthernetClient* client;
 
   byte* mac;
-  String appId;
-  String collectorHost;
-  String macAddress;
-  String userId;
+  char *appId;
+  char *collectorHost;
+  char *macAddress;
+  char *userId;
 
-  void init(String aHost);
+  void init(const char *aHost);
   int track(const QuerystringPair aEventPairs[]) const;
-  int getUri(const String aHost, const int aPort, const String aPath, const QuerystringPair aPairs[]) const;
+  int getUri(const char *aHost, const int aPort, const char *aPath, const QuerystringPair aPairs[]) const;
 
-  static String mac2String(const byte* aMac);
-  static String double2String(const double aDbl, const int aPrecision);
+  static char *mac2Chars(const byte* aMac);
+  static char *int2Chars(const int aInt);
+  static char *double2Chars(const double aDbl, const int aPrecision);
   static int countPairs(const QuerystringPair aPairs[]);
-  static String urlEncode(const char* aMsg);
+  static char *urlEncode(const char* aMsg);
 };
 
 #endif

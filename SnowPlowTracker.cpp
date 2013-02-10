@@ -28,9 +28,9 @@
 #define LOGGING // Switch off before release
 
 // Initialize constants
-const String SnowPlowTracker::kUserAgent = "Arduino/2.0";
-const String SnowPlowTracker::kTrackerPlatform = "iot"; // Internet of things
-const String SnowPlowTracker::kTrackerVersion = "arduino-0.1.0";
+const char *SnowPlowTracker::kUserAgent = "Arduino/2.0";
+const char *SnowPlowTracker::kTrackerPlatform = "iot"; // Internet of things
+const char *SnowPlowTracker::kTrackerVersion = "arduino-0.1.0";
 
 /**
  * Constructor for the SnowPlowTracker
@@ -45,10 +45,10 @@ const String SnowPlowTracker::kTrackerVersion = "arduino-0.1.0";
  * @param aAppId The SnowPlow application
  *        ID
  **/
-SnowPlowTracker::SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, const String aAppId) {  
+SnowPlowTracker::SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, const char *aAppId) {  
   this->ethernet = aEthernet;
   this->mac = (byte*)aMac;
-  this->appId = aAppId;
+  this->appId = (char*)aAppId;
 }
 
 /**
@@ -60,8 +60,10 @@ SnowPlowTracker::SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, con
  *        of the CloudFront collector
  *        e.g. "d3rkrsqgmqf"
  */
-void SnowPlowTracker::initCf(const String aCfSubdomain) {
-  const String host = aCfSubdomain + String(".cloudfront.net");
+void SnowPlowTracker::initCf(const char *aCfSubdomain) {
+  char host[128];
+  const size_t hostLength = sizeof(host);
+  snprintf(host, hostLength, "%s.cloudfront.net", aCfSubdomain);
   this->init(host);
 }
 
@@ -74,7 +76,7 @@ void SnowPlowTracker::initCf(const String aCfSubdomain) {
  *        URL hosting the collector
  *        e.g. tracking.mysite.com
  */
-void SnowPlowTracker::initUrl(const String aHost) {
+void SnowPlowTracker::initUrl(const char *aHost) {
   this->init(aHost);
 }
 
@@ -83,7 +85,7 @@ void SnowPlowTracker::initUrl(const String aHost) {
  *
  * @param @aUserId The new User Id
  */
-void SnowPlowTracker::setUserId(String aUserId) {
+void SnowPlowTracker::setUserId(char *aUserId) {
   this->userId = aUserId;
 
 #ifdef LOGGING
@@ -99,7 +101,7 @@ void SnowPlowTracker::setUserId(String aUserId) {
  *
  * @param aCategory The name you supply for
  *        the group of objects you want to track
- * @param aAction A string that is uniquely
+ * @param aAction A char *that is uniquely
  *        paired with each category, and commonly
  *        used to define the type of user
  *        interaction for the web object
@@ -117,14 +119,14 @@ void SnowPlowTracker::setUserId(String aUserId) {
  *         of logging the event to SnowPlow
  */ 
 int SnowPlowTracker::trackStructEvent(
-  const String aCategory,
-  const String aAction,
-  const String aLabel,
-  const String aProperty,
+  const char *aCategory,
+  const char *aAction,
+  const char *aLabel,
+  const char *aProperty,
   const int aValue) const {
 
-  // Cast aValue to String and call appropriate trackEvent
-  return this->trackStructEvent(aCategory, aAction, aLabel, aProperty, String(aValue));
+  // Cast aValue to char *and call appropriate trackEvent
+  return this->trackStructEvent(aCategory, aAction, aLabel, aProperty, int2Chars(aValue));
 }
 
 /**
@@ -134,7 +136,7 @@ int SnowPlowTracker::trackStructEvent(
  *
  * @param aCategory The name you supply for
  *        the group of objects you want to track
- * @param aAction A string that is uniquely
+ * @param aAction A char *that is uniquely
  *        paired with each category, and commonly
  *        used to define the type of user
  *        interaction for the web object
@@ -154,15 +156,15 @@ int SnowPlowTracker::trackStructEvent(
  *         of logging the event to SnowPlow
  */
 int SnowPlowTracker::trackStructEvent(
-  const String aCategory,
-  const String aAction,
-  const String aLabel,
-  const String aProperty,
+  const char *aCategory,
+  const char *aAction,
+  const char *aLabel,
+  const char *aProperty,
   const double aValue,
   const int aValuePrecision) const {
 
-  // Cast aValue to String and call appropriate trackEvent
-  return this->trackStructEvent(aCategory, aAction, aLabel, aProperty, double2String(aValue, aValuePrecision));
+  // Cast aValue to char *and call appropriate trackEvent
+  return this->trackStructEvent(aCategory, aAction, aLabel, aProperty, double2Chars(aValue, aValuePrecision));
 }
 
 /**
@@ -172,7 +174,7 @@ int SnowPlowTracker::trackStructEvent(
  *
  * @param aCategory The name you supply for
  *        the group of objects you want to track
- * @param aAction A string that is uniquely
+ * @param aAction A char *that is uniquely
  *        paired with each category, and commonly
  *        used to define the type of user
  *        interaction for the web object
@@ -192,15 +194,15 @@ int SnowPlowTracker::trackStructEvent(
  *         of logging the event to SnowPlow
  */
 int SnowPlowTracker::trackStructEvent(
-  const String aCategory,
-  const String aAction,
-  const String aLabel,
-  const String aProperty,
+  const char *aCategory,
+  const char *aAction,
+  const char *aLabel,
+  const char *aProperty,
   const float aValue,
   const int aValuePrecision) const {
 
-  // Cast aValue to String and call appropriate trackEvent
-  return this->trackStructEvent(aCategory, aAction, aLabel, aProperty, double2String(aValue, aValuePrecision));
+  // Cast aValue to char *and call appropriate trackEvent
+  return this->trackStructEvent(aCategory, aAction, aLabel, aProperty, double2Chars(aValue, aValuePrecision));
 }
 
 /**
@@ -210,7 +212,7 @@ int SnowPlowTracker::trackStructEvent(
  *
  * @param aCategory The name you supply for
  *        the group of objects you want to track
- * @param aAction A string that is uniquely
+ * @param aAction A char *that is uniquely
  *        paired with each category, and commonly
  *        used to define the type of user
  *        interaction for the web object
@@ -221,18 +223,18 @@ int SnowPlowTracker::trackStructEvent(
  *        describing the object or the action
  *        performed on it. This might be the
  *        quantity of an item added to basket
- * @param aValue A String value that
+ * @param aValue A char *value that
  *        you can use to provide non-numerical data
  *        about the user event
  * @return An integer indicating the success/failure
  *         of logging the event to SnowPlow
  */ 
 int SnowPlowTracker::trackStructEvent(
-  const String aCategory,
-  const String aAction,
-  const String aLabel,
-  const String aProperty,
-  const String aValue) const {
+  const char *aCategory,
+  const char *aAction,
+  const char *aLabel,
+  const char *aProperty,
+  const char *aValue) const {
 
 #ifdef LOGGING
   Serial.print("Tracking structured event ");
@@ -243,11 +245,11 @@ int SnowPlowTracker::trackStructEvent(
 
   const QuerystringPair eventPairs[] = {
     { "e", "c" },
-    { "ev_ca", aCategory },
-    { "ev_ac", aAction },
-    { "ev_la", aLabel },
-    { "ev_pr", aProperty },
-    { "ev_va", aValue },
+    { "ev_ca", (char*)aCategory },
+    { "ev_ac", (char*)aAction },
+    { "ev_la", (char*)aLabel },
+    { "ev_pr", (char*)aProperty },
+    { "ev_va", (char*)aValue },
     { NULL, NULL } // Signals end of array
   };
 
@@ -263,11 +265,11 @@ int SnowPlowTracker::trackStructEvent(
  *        e.g. tracking.mysite.com
  *        or d3rkrsqgmqf.cloudfront.net
  */
-void SnowPlowTracker::init(const String aHost) {
+void SnowPlowTracker::init(const char *aHost) {
 
   // Set collectorHost and userId
-  this->collectorHost = aHost;
-  this->macAddress = mac2String(this->mac);
+  this->collectorHost = (char*)aHost;
+  this->macAddress = mac2Chars(this->mac);
 
   // Boot the Ethernet connection
   this->ethernet->begin((byte*)this->mac);
@@ -299,11 +301,11 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
   const int fixedPairCount = 5;
 
   QuerystringPair qsPairs[fixedPairCount + this->kMaxEventPairs] = {
-    { "p", this->kTrackerPlatform },
-    { "mac", this->macAddress },
-    { "uid", this->userId },
-    { "aid", this->appId },
-    { "tv", this->kTrackerVersion }
+    { "p", (char*)this->kTrackerPlatform },
+    { "mac", (char*)this->macAddress },
+    { "uid", (char*)this->userId },
+    { "aid", (char*)this->appId },
+    { "tv", (char*)this->kTrackerVersion }
   };
 
   for (int i = 0; i < eventPairCount; i++) {
@@ -316,22 +318,17 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
 
 /**
  * Converts a MAC address byte array
- * into a String. Generated String is
+ * into a String. Generated char *is
  * of the format: "00:01:0A:2E:05:0B"
  *
  * @param aMac The MAC address, in bytes,
  *             to convert
  * @return the MAC address as a String
  */
-String SnowPlowTracker::mac2String(const byte* aMac) {
-  const int macLength = 6;
-  String buffer = String();
-  for (int i = 0; i < macLength; i++) {
-    buffer += String(aMac[i], HEX);
-    if (i < macLength - 1) {
-      buffer += ":";
-    }
-  }
+char *SnowPlowTracker::mac2Chars(const byte* aMac) {
+  char buffer[17];
+  const size_t bufferLength = sizeof(buffer);
+  snprintf(buffer, bufferLength, "%02X:%02X:%02X:%02X:%02X:%02X", aMac[0], aMac[1], aMac[2], aMac[3], aMac[4], aMac[5]);
   return buffer;
 }
 
@@ -355,8 +352,22 @@ int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
 }
 
 /**
+ * Converts an int into a char *.
+ *
+ * @param aInt The integer to
+ *        convert into a char *
+ * @return the converted String
+ */
+char *SnowPlowTracker::int2Chars(const int aInt) {
+  char buffer[11]; // Max length of Arduino int is - plus 10 digits
+  const size_t bufferLength = sizeof(buffer);
+  snprintf(buffer, bufferLength, "%d", aInt);
+  return buffer;
+}
+
+/**
  * Converts a double (or a float)
- * into a String. Generated String is
+ * into a String. Generated char *is
  * 1 or more characters long, with the
  * number of digits after the decimal
  * point specified by `aPrecision`.
@@ -365,10 +376,10 @@ int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
  *        convert into a String
  * @return the converted String
  */
-String SnowPlowTracker::double2String(const double aDouble, const int aPrecision) {
+char *SnowPlowTracker::double2Chars(const double aDouble, const int aPrecision) {
   char buffer[25];
   dtostrf(aDouble, 1, aPrecision, buffer);
-  return String(buffer);
+  return buffer;
 }
 
 /**
@@ -381,10 +392,10 @@ String SnowPlowTracker::double2String(const double aDouble, const int aPrecision
  *        URL-encode.
  * @return the encoded String
  */
-String SnowPlowTracker::urlEncode(const char* aMsg)
+char *SnowPlowTracker::urlEncode(const char* aMsg)
 {
   const char *hex = "0123456789abcdef";
-  String encodedMsg = "";
+  char *encodedMsg = "";
 
   while (*aMsg != '\0') {
     if (   ('a' <= *aMsg && *aMsg <= 'z')
@@ -421,34 +432,30 @@ String SnowPlowTracker::urlEncode(const char* aMsg)
  *         the event to SnowPlow
  */
 int SnowPlowTracker::getUri(
-  const String aHost,
+  const char *aHost,
   const int aPort,
-  const String aPath,
+  const char *aPath,
   const QuerystringPair aPairs[]) const {
 
-  // String -> const char*
-  char host[sizeof(aHost)];
-  aHost.toCharArray(host, sizeof(host));
-
   // Connect to the host
-  if (this->client->connect(host, aPort)) {
+  if (this->client->connect(aHost, aPort)) {
     if (this->client->connected()) {
 
       // Build our GET line from:
       // 1. The URI path... 
       this->client->print("GET ");
-      Serial.print();
+      Serial.print("GET ");
       this->client->print(aPath);
-      Serial.print();
+      Serial.print(aPath);
 
-      // 2. The querystring name-value pairs
+      // 2. The querychar *name-value pairs
       if (aPairs != NULL) {
         char idx = 0;
-        QuerystringPair* pair = &aPairs[0];
+        QuerystringPair* pair = (QuerystringPair*)&aPairs[0];
         while (pair->name != NULL) {
           if (idx > 0) {
             this->client->print("&");
-                  Serial.print("&");
+            Serial.print("&");
           }
           this->client->print(pair->name);
           Serial.print(pair->name);
@@ -456,8 +463,9 @@ int SnowPlowTracker::getUri(
           Serial.print("=");
           this->client->print(urlEncode(pair->value));
           Serial.print(urlEncode(pair->value));
-          pair = &aPairs[++idx];
+          pair = (QuerystringPair*)&aPairs[++idx];
         }
+      }
 
       // 3. Finish the GET definition
       this->client->println(" HTTP/1.1");

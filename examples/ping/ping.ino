@@ -29,10 +29,10 @@
 const byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0xF8, 0xA0 };
 
 // SnowPlow CloudFront collector subdomain. Update with your collector.
-const String snowplowCfSubdomain = "d3rkrsqld9gmqf";
+const char *snowplowCfSubdomain = "d3rkrsqld9gmqf";
 
 // SnowPlow app name
-const String snowplowAppName = "arduino-tracker-examples";
+const char *snowplowAppName = "arduino-tracker-examples";
 
 // SnowPlow Tracker
 SnowPlowTracker snowplow(&Ethernet, mac, snowplowAppName);
