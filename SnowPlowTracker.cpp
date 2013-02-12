@@ -89,7 +89,7 @@ void SnowPlowTracker::setUserId(char *aUserId) {
   this->userId = aUserId;
 
 #ifdef LOGGING
-  Serial.print("SnowPlow User Id updated to: ");
+  Serial.print("SnowPlow user_id updated to: ");
   Serial.println(this->userId);
 #endif
 }
@@ -277,6 +277,8 @@ void SnowPlowTracker::init(const char *aHost) {
   this->client = new EthernetClient();
 
 #ifdef LOGGING
+  Serial.print("Ethernet booted with local IP: ");
+  Serial.println(this->ethernet->localIP());
   Serial.print("SnowPlowTracker initialized with collector host: ");
   Serial.println(this->collectorHost);
 #endif
@@ -437,6 +439,8 @@ int SnowPlowTracker::getUri(
   const char *aPath,
   const QuerystringPair aPairs[]) const {
 
+  Serial.println("Starting getUri");
+
   // Connect to the host
   if (this->client->connect(aHost, aPort)) {
     if (this->client->connected()) {
@@ -450,6 +454,8 @@ int SnowPlowTracker::getUri(
 
       // 2. The querychar *name-value pairs
       if (aPairs != NULL) {
+        this->client->print("?");
+        Serial.print("?");
         char idx = 0;
         QuerystringPair* pair = (QuerystringPair*)&aPairs[0];
         while (pair->name != NULL) {
@@ -483,7 +489,11 @@ int SnowPlowTracker::getUri(
 
       // TODO: check return value
       // https://github.com/exosite-garage/arduino_exosite_library/blob/master/Exosite.cpp
-    }
+    } else {
+      Serial.print("INNER OH NO");
+    } 
+  } else {
+    Serial.print("OUTER OH NO");
   }
 
   // Return updated status code
