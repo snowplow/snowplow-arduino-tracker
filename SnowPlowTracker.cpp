@@ -7,7 +7,7 @@
  * @copyright   SnowPlow Analytics Ltd
  * @license     Apache License Version 2.0
  *
- * Copyright (c) 2012 SnowPlow Analytics Ltd. All rights reserved.
+ * Copyright (c) 2012-2013 SnowPlow Analytics Ltd. All rights reserved.
  *
  * This program is licensed to you under the Apache License Version 2.0,
  * and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -61,7 +61,7 @@ SnowPlowTracker::SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, con
  *        e.g. "d3rkrsqgmqf"
  */
 void SnowPlowTracker::initCf(const char *aCfSubdomain) {
-  char host[128];
+  char host[64];
   const size_t hostLength = sizeof(host);
   snprintf(host, hostLength, "%s.cloudfront.net", aCfSubdomain);
   this->init(host);
@@ -328,7 +328,7 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
  * @return the MAC address as a String
  */
 char *SnowPlowTracker::mac2Chars(const byte* aMac) {
-  char buffer[17];
+  char buffer[18]; // XX:XX:XX:XX:XX\0
   const size_t bufferLength = sizeof(buffer);
   snprintf(buffer, bufferLength, "%02X:%02X:%02X:%02X:%02X:%02X", aMac[0], aMac[1], aMac[2], aMac[3], aMac[4], aMac[5]);
   return buffer;
@@ -347,7 +347,7 @@ char *SnowPlowTracker::mac2Chars(const byte* aMac) {
  */
 int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
   int i = 1;
-  while (aPairs[i].name != NULL) {
+  while (aPairs[i]->name != NULL) {
     i++;
   }
   return i;
@@ -361,7 +361,7 @@ int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
  * @return the converted String
  */
 char *SnowPlowTracker::int2Chars(const int aInt) {
-  char buffer[11]; // Max length of Arduino int is - plus 10 digits
+  char buffer[11]; // Max length of Arduino int is -10 digits
   const size_t bufferLength = sizeof(buffer);
   snprintf(buffer, bufferLength, "%d", aInt);
   return buffer;
@@ -397,20 +397,21 @@ char *SnowPlowTracker::double2Chars(const double aDouble, const int aPrecision) 
 char *SnowPlowTracker::urlEncode(const char* aMsg)
 {
   const char *hex = "0123456789abcdef";
-  char *encodedMsg = "";
+  char encodedMsg[128];
+  int idx = 0;
 
   while (*aMsg != '\0') {
     if (   ('a' <= *aMsg && *aMsg <= 'z')
         || ('A' <= *aMsg && *aMsg <= 'Z')
         || ('0' <= *aMsg && *aMsg <= '9')) {
-      encodedMsg += *aMsg;
+      encodedMsg[idx++] = *aMsg;
     } else {
-      encodedMsg += '%';
-      encodedMsg += hex[*aMsg >> 4];
-      encodedMsg += hex[*aMsg & 15];
+      encodedMsg[idx++] = '%';
+      encodedMsg[idx++] = hex[*aMsg >> 4];
+      encodedMsg[idx++] = hex[*aMsg & 15];
     }
-    aMsg++;
   }
+  encodedMsg[idx] = '\0'; // tail it
   return encodedMsg;
 }
 
@@ -491,11 +492,9 @@ int SnowPlowTracker::getUri(
 
       // TODO: check return value
       // https://github.com/exosite-garage/arduino_exosite_library/blob/master/Exosite.cpp
-    // } else {
-    //   Serial.print("INNER OH NO");
-    // } 
   } else {
-    Serial.print("OUTER OH NO");
+    // Connection didn't work
+    return SnowPlowTracker::ERROR_CONNECTION_FAILED;
   }
 
   // Return updated status code

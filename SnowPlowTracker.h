@@ -7,7 +7,7 @@
  * @copyright   SnowPlow Analytics Ltd
  * @license     Apache License Version 2.0
  *
- * Copyright (c) 2012 SnowPlow Analytics Ltd. All rights reserved.
+ * Copyright (c) 2012-2013 SnowPlow Analytics Ltd. All rights reserved.
  *
  * This program is licensed to you under the Apache License Version 2.0,
  * and you may not use this file except in compliance with the Apache License Version 2.0.
@@ -71,7 +71,7 @@ class SnowPlowTracker
   static const char *kTrackerPlatform;
   static const char *kTrackerVersion;
   static const int kCollectorPort = 80;
-  static const int kMaxEventPairs = 7;
+  static const int kMaxEventPairs = 5; // Total number of fields in a SnowPlow event
 
   // Struct to hold a querychar *name-value pair
   typedef struct

@@ -7,7 +7,7 @@
 #######################################
 
 SnowPlowTracker	KEYWORD1
-name_value_pair KEYWORD1
+QuerystringPair KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -16,7 +16,7 @@ name_value_pair KEYWORD1
 initCf	KEYWORD2
 initUrl	KEYWORD2
 setUserId	KEYWORD2
-trackEvent	KEYWORD2
+trackStructEvent	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
@@ -29,3 +29,6 @@ ERROR_TIMED_OUT LITERAL1
 ERROR_INVALID_RESPONSE LITERAL1
 kUserAgent LITERAL1
 kTrackerVersion LITERAL1
+kTrackerPlatform LITERAL1
+kCollectorPort LITERAL1
+kMaxEventPairs LITERAL1
