@@ -443,7 +443,7 @@ int SnowPlowTracker::getUri(
 
   // Connect to the host
   if (this->client->connect(aHost, aPort)) {
-    if (this->client->connected()) {
+    // if (this->client->connected()) {
 
       // Build our GET line from:
       // 1. The URI path... 
@@ -468,7 +468,7 @@ int SnowPlowTracker::getUri(
           this->client->print("=");
           Serial.print("=");
           this->client->print(urlEncode(pair->value));
-          Serial.print(urlEncode(pair->value));
+          Serial.print(pair->value);
           pair = (QuerystringPair*)&aPairs[++idx];
         }
       }
@@ -484,14 +484,16 @@ int SnowPlowTracker::getUri(
       this->client->print("User-Agent: ");
       this->client->println(this->kUserAgent);
 
+      this->client->println("Connection: close");
+
       this->client->println();
       // End of headers
 
       // TODO: check return value
       // https://github.com/exosite-garage/arduino_exosite_library/blob/master/Exosite.cpp
-    } else {
-      Serial.print("INNER OH NO");
-    } 
+    // } else {
+    //   Serial.print("INNER OH NO");
+    // } 
   } else {
     Serial.print("OUTER OH NO");
   }
