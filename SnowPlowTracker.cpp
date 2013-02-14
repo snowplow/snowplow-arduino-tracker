@@ -347,7 +347,7 @@ char *SnowPlowTracker::mac2Chars(const byte* aMac) {
  */
 int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
   int i = 1;
-  while (aPairs[i]->name != NULL) {
+  while (aPairs[i].name != NULL) {
     i++;
   }
   return i;
@@ -439,8 +439,6 @@ int SnowPlowTracker::getUri(
   const int aPort,
   const char *aPath,
   const QuerystringPair aPairs[]) const {
-
-  Serial.println("Starting getUri");
 
   // Connect to the host
   if (this->client->connect(aHost, aPort)) {
