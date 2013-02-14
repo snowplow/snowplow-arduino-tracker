@@ -237,7 +237,7 @@ int SnowPlowTracker::trackStructEvent(
   const char *aValue) const {
 
 #ifdef LOGGING
-  Serial.print("Tracking structured event category: [");
+  Serial.print("Tracking structured event with category: [");
   Serial.print(aCategory);
   Serial.print("], action: [");
   Serial.print(aAction);
@@ -332,14 +332,14 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
  * @return the MAC address as a String
  */
 char *SnowPlowTracker::mac2Chars(const byte* aMac) {
-  char buffer[18]; // 17 chars plus \0
+  char *buffer = (char*)malloc(18); // 17 chars plus \0
   sprintf(buffer, "%02X:%02X:%02X:%02X:%02X:%02X",
-          (int)aMac[0],
-          (int)aMac[1],
-          (int)aMac[2],
-          (int)aMac[3],
-          (int)aMac[4],
-          (int)aMac[5]);
+          aMac[0],
+          aMac[1],
+          aMac[2],
+          aMac[3],
+          aMac[4],
+          aMac[5]);
   return buffer;
 }
 
@@ -371,6 +371,7 @@ int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
  */
 char *SnowPlowTracker::int2Chars(const int aInt) {
   char buffer[11]; // Max length of Arduino int is -10 digits
+  // TODO: fix this. Won't work. can I use itoa instead?
   const size_t bufferLength = sizeof(buffer);
   snprintf(buffer, bufferLength, "%d", aInt);
   return buffer;
