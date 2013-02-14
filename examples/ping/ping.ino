@@ -54,6 +54,9 @@ void setup()
   // Setup SnowPlow Arduino tracker
   snowplow.initCf(snowplowCfSubdomain);
   snowplow.setUserId("my-arduino");
+
+  // Seed our random number generator
+  randomSeed(analogRead(0));
 }
 
 /*
@@ -71,8 +74,29 @@ void loop()
 
   if (millis() - prevTime >= (15000))
   {
-    // Track via SnowPlow: category, action (label, property, value - all NULL)
-    snowplow.trackStructEvent("examples", "a ping");
+    // Between 0 and 3
+    switch (random(4)) {
+
+    case 0:
+      // Basic ping: label, property, value all NULL
+      snowplow.trackStructEvent("example", "basic ping");
+      break;
+
+    case 1:
+      // String ping: all fields set
+      snowplow.trackStructEvent("example", "string ping", "regular", "ascii", "a string");
+      break;
+
+    case 2:
+      // Int ping: all fields but property set
+      snowplow.trackStructEvent("example", "int ping", "age", NULL, 22);
+      break;
+
+    default: // Aka case 3
+      // Float ping: all fields but label set
+      snowplow.trackStructEvent("example", "float ping", NULL, "celsius", 15.3, 1);
+      break;
+    }
 
     prevTime = millis();
   }
