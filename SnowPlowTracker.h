@@ -96,8 +96,9 @@ class SnowPlowTracker
   static char *mac2Chars(const byte* aMac);
   static char *int2Chars(const int aInt);
   static char *double2Chars(const double aDbl, const int aPrecision);
+  static char char2Hex(const char aChar);
   static int countPairs(const QuerystringPair aPairs[]);
-  static char *urlEncode(const char* aMsg);
+  static char *urlEncode(const char* aStr);
 };
 
 #endif

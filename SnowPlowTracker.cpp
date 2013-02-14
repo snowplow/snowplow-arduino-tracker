@@ -328,9 +328,14 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
  * @return the MAC address as a String
  */
 char *SnowPlowTracker::mac2Chars(const byte* aMac) {
-  char buffer[18]; // XX:XX:XX:XX:XX\0
-  const size_t bufferLength = sizeof(buffer);
-  snprintf(buffer, bufferLength, "%02X:%02X:%02X:%02X:%02X:%02X", aMac[0], aMac[1], aMac[2], aMac[3], aMac[4], aMac[5]);
+  char buffer[18]; // 17 chars plus \0
+  sprintf(buffer, "%02X:%02X:%02X:%02X:%02X:%02X",
+          (int)aMac[0],
+          (int)aMac[1],
+          (int)aMac[2],
+          (int)aMac[3],
+          (int)aMac[4],
+          (int)aMac[5]);
   return buffer;
 }
 
@@ -385,35 +390,45 @@ char *SnowPlowTracker::double2Chars(const double aDouble, const int aPrecision) 
 }
 
 /**
- * URL-encodes a string. Using code
- * taken from:
+ * Converts an integer value to its
+ * hex character
  *
+ * @param aChar The character to hexify
+ * @return the character in hex form
+ */
+char SnowPlowTracker::char2Hex(const char aChar) {
+  static char hex[] = "0123456789abcdef";
+  return hex[aChar & 15];
+}
+
+/**
+ * URL-encodes a string. Using code
+ * adapted from:
+ *
+ * http://www.geekhideout.com/urlcode.shtml
  * http://hardwarefun.com/tutorials/url-encoding-in-arduino
  *
- * @param aMsg The characters to
+ * IMPORTANT: be sure to free() the returned
+ * string after use
+ * 
+ * @param aStr The characters to
  *        URL-encode.
  * @return the encoded String
  */
-char *SnowPlowTracker::urlEncode(const char* aMsg)
+char *SnowPlowTracker::urlEncode(const char* aStr)
 {
-  const char *hex = "0123456789abcdef";
-  char encodedMsg[128];
-  int idx = 0;
-
-  while (*aMsg != '\0') {
-    if (   ('a' <= *aMsg && *aMsg <= 'z')
-        || ('A' <= *aMsg && *aMsg <= 'Z')
-        || ('0' <= *aMsg && *aMsg <= '9')) {
-      encodedMsg[idx++] = *aMsg;
-    } else {
-      encodedMsg[idx++] = '%';
-      encodedMsg[idx++] = hex[*aMsg >> 4];
-      encodedMsg[idx++] = hex[*aMsg & 15];
-    }
-    aMsg++;
+  char *pstr = (char*)aStr, *encodedStr = (char*)malloc(strlen(aStr) * 3 + 1), *pbuf = encodedStr;
+  while (*pstr) {
+    if (isalnum(*pstr) || *pstr == '-' || *pstr == '_' || *pstr == '.' || *pstr == '~') 
+      *pbuf++ = *pstr;
+    else if (*pstr == ' ') 
+      *pbuf++ = '+';
+    else 
+      *pbuf++ = '%', *pbuf++ = char2Hex(*pstr >> 4), *pbuf++ = char2Hex(*pstr & 15);
+    pstr++;
   }
-  encodedMsg[idx] = '\0'; // tail it
-  return encodedMsg;
+  *pbuf = '\0'; // Tail it
+  return encodedStr;
 }
 
 /**
