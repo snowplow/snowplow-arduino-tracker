@@ -71,7 +71,7 @@ class SnowPlowTracker
   static const char *kTrackerPlatform;
   static const char *kTrackerVersion;
   static const int kCollectorPort = 80;
-  static const int kMaxEventPairs = 5; // Total number of fields in a SnowPlow event
+  static const int kMaxEventPairs = 6; // Total number of event-specific fields in a SnowPlow event
 
   // Struct to hold a querychar *name-value pair
   typedef struct
