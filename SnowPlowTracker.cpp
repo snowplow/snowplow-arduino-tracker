@@ -278,8 +278,11 @@ void SnowPlowTracker::init(const char *aHost) {
   this->client = new EthernetClient();
 
 #ifdef LOGGING
-  Serial.print("Ethernet booted with local IP: ");
-  Serial.println(this->ethernet->localIP());
+  Serial.print("Ethernet booted with MAC address [");
+  Serial.print(this->macAddress);
+  Serial.print("] and local IP [");
+  Serial.print(this->ethernet->localIP());
+  Serial.println("]");
   Serial.print("SnowPlowTracker initialized with collector host: ");
   Serial.println(this->collectorHost);
 #endif
