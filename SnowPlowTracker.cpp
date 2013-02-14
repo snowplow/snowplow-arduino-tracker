@@ -424,8 +424,6 @@ char *SnowPlowTracker::urlEncode(const char* aStr)
   while (*pstr) {
     if (isalnum(*pstr) || *pstr == '-' || *pstr == '_' || *pstr == '.' || *pstr == '~') 
       *pbuf++ = *pstr;
-    else if (*pstr == ' ') 
-      *pbuf++ = '+';
     else 
       *pbuf++ = '%', *pbuf++ = char2Hex(*pstr >> 4), *pbuf++ = char2Hex(*pstr & 15);
     pstr++;
