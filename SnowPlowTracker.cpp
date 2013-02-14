@@ -410,6 +410,7 @@ char *SnowPlowTracker::urlEncode(const char* aMsg)
       encodedMsg[idx++] = hex[*aMsg >> 4];
       encodedMsg[idx++] = hex[*aMsg & 15];
     }
+    *aMsg++;
   }
   encodedMsg[idx] = '\0'; // tail it
   return encodedMsg;
