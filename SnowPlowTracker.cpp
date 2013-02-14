@@ -237,14 +237,15 @@ int SnowPlowTracker::trackStructEvent(
   const char *aValue) const {
 
 #ifdef LOGGING
-  Serial.print("Tracking structured event ");
+  Serial.print("Tracking structured event category: [");
   Serial.print(aCategory);
-  Serial.print(" ");
-  Serial.println(aAction);
+  Serial.print("], action: [");
+  Serial.print(aAction);
+  Serial.println("]");
 #endif
 
   const QuerystringPair eventPairs[] = {
-    { "e", "c" },
+    { "e", "se" }, // Structured event
     { "ev_ca", (char*)aCategory },
     { "ev_ac", (char*)aAction },
     { "ev_la", (char*)aLabel },
@@ -411,8 +412,7 @@ char SnowPlowTracker::char2Hex(const char aChar) {
  * IMPORTANT: be sure to free() the returned
  * string after use
  * 
- * @param aStr The characters to
- *        URL-encode.
+ * @param aStr The characters to URL-encode.
  * @return the encoded String
  */
 char *SnowPlowTracker::urlEncode(const char* aStr)
@@ -473,24 +473,30 @@ int SnowPlowTracker::getUri(
         Serial.print("?");
         char idx = 0;
         QuerystringPair* pair = (QuerystringPair*)&aPairs[0];
+        // Loop for all pairs
         while (pair->name != NULL) {
-          if (idx > 0) {
-            this->client->print("&");
-            Serial.print("&");
+          // Only add if value is not null
+          if (pair->value != NULL) {
+            if (idx > 0) {
+              this->client->print("&");
+              Serial.print("&");
+            }
+            this->client->print(pair->name);
+            Serial.print(pair->name);
+            this->client->print("=");
+            Serial.print("=");
+            char *encoded = urlEncode(pair->value);
+            this->client->print(encoded);
+            Serial.print(encoded);
+            free(encoded);
           }
-          this->client->print(pair->name);
-          Serial.print(pair->name);
-          this->client->print("=");
-          Serial.print("=");
-          this->client->print(urlEncode(pair->value));
-          Serial.print(pair->value);
           pair = (QuerystringPair*)&aPairs[++idx];
         }
       }
 
       // 3. Finish the GET definition
       this->client->println(" HTTP/1.1");
-      Serial.print(" HTTP/1.1");
+      Serial.println(" HTTP/1.1");
 
       // Headers
       this->client->print("Host: ");
