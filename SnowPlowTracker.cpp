@@ -89,8 +89,9 @@ void SnowPlowTracker::setUserId(char *aUserId) {
   this->userId = aUserId;
 
 #ifdef LOGGING
-  Serial.print("SnowPlow user_id updated to: ");
-  Serial.println(this->userId);
+  Serial.print("SnowPlow user id updated to [");
+  Serial.print(this->userId);
+  Serial.println("]");
 #endif
 }
 
@@ -237,10 +238,15 @@ int SnowPlowTracker::trackStructEvent(
   const char *aValue) const {
 
 #ifdef LOGGING
-  Serial.print("Tracking structured event with category: [");
+  Serial.print("Tracking structured event: category [");
   Serial.print(aCategory);
-  Serial.print("], action: [");
+  Serial.print("], action [");
   Serial.print(aAction);
+  Serial.print("], label [");
+  Serial.print(aLabel);
+  Serial.print("], property [");
+  Serial.print(aValue);
+  Serial.print("], value [");
   Serial.println("]");
 #endif
 
@@ -280,11 +286,12 @@ void SnowPlowTracker::init(const char *aHost) {
 #ifdef LOGGING
   Serial.print("Ethernet booted with MAC address [");
   Serial.print(this->macAddress);
-  Serial.print("] and local IP [");
+  Serial.print("], local IP address [");
   Serial.print(this->ethernet->localIP());
   Serial.println("]");
-  Serial.print("SnowPlowTracker initialized with collector host: ");
-  Serial.println(this->collectorHost);
+  Serial.print("SnowPlowTracker initialized with collector host [");
+  Serial.print(this->collectorHost);
+  Serial.println("]");
 #endif
 }
 
