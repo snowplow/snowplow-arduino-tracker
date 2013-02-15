@@ -32,7 +32,7 @@ const byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0xF8, 0xA0 };
 const char *snowplowCfSubdomain = "d3rkrsqld9gmqf";
 
 // SnowPlow app name
-const char *snowplowAppName = "arduino-ping-example";
+const char *snowplowAppName = "arduino-ping-examples";
 
 // SnowPlow Tracker
 SnowPlowTracker snowplow(&Ethernet, mac, snowplowAppName);

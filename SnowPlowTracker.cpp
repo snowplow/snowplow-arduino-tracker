@@ -245,8 +245,9 @@ int SnowPlowTracker::trackStructEvent(
   Serial.print("], label [");
   Serial.print(aLabel);
   Serial.print("], property [");
-  Serial.print(aValue);
+  Serial.print(aProperty);
   Serial.print("], value [");
+  Serial.print(aValue);  
   Serial.println("]");
 #endif
 
