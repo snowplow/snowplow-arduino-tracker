@@ -61,8 +61,10 @@ SnowPlowTracker::SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, con
  *        e.g. "d3rkrsqgmqf"
  */
 void SnowPlowTracker::initCf(const char *aCfSubdomain) {
-  char host[64];
-  const size_t hostLength = sizeof(host);
+
+  const size_t hostLength = sizeof(aCfSubdomain) + 16; // .cloudfront.net\0 = 16
+  char *host = (char*)malloc(hostLength);
+
   snprintf(host, hostLength, "%s.cloudfront.net", aCfSubdomain);
   this->init(host);
 }
@@ -465,6 +467,10 @@ int SnowPlowTracker::getUri(
   const int aPort,
   const char *aPath,
   const QuerystringPair aPairs[]) const {
+
+  Serial.print("Host is [");
+  Serial.print(aHost);
+  Serial.print("]");
 
   // Connect to the host
   if (this->client->connect(aHost, aPort)) {

@@ -54,8 +54,6 @@ void setup()
   // Setup SnowPlow Arduino tracker
   snowplow.initCf(snowplowCfSubdomain);
   snowplow.setUserId("my-arduino");
-
-  counter = 0;
 }
 
 /*
