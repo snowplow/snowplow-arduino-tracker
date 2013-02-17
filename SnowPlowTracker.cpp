@@ -364,9 +364,10 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
 
   // First combine the two sets of events
   const int eventPairCount = countPairs(aEventPairs);
-  const int fixedPairCount = 5;
+  const int fixedPairCount = 6;
 
   QuerystringPair qsPairs[fixedPairCount + this->kMaxEventPairs] = {
+    { "tid", this->getTransactionId() },
     { "p", (char*)this->kTrackerPlatform },
     { "mac", (char*)this->macAddress },
     { "uid", (char*)this->userId },
@@ -380,6 +381,25 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
   }
 
   return this->getUri(this->collectorHost, this->kCollectorPort, "/i", qsPairs);
+}
+
+/**
+ * Returns the transaction ID for this
+ * track event.
+ *
+ * Uses millis() and casts to an int. For
+ * background see:
+ *
+ * http://www.cmiyc.com/blog/2012/07/16/arduino-how-do-you-reset-millis/
+ *
+ * IMPORTANT: be sure to free() the returned
+ * string after use
+ *
+ * @return the transaction ID, effectively
+ *         millis() cast to an integer
+ */
+char *SnowPlowTracker::getTransactionId() {
+  return int2Chars((unsigned int)millis());
 }
 
 /**
@@ -549,6 +569,10 @@ int SnowPlowTracker::getUri(
       Serial.print(aPath);
 
       // 2. The querychar *name-value pairs
+      // TODO: if we urlescape prior to this method, then
+      // maybe we could just consistently free()
+      // each value rather than have edge cases where we
+      // have to use free().
       if (aPairs != NULL) {
         this->client->print("?");
         Serial.print("?");
@@ -570,11 +594,18 @@ int SnowPlowTracker::getUri(
             this->client->print(encoded);
             Serial.print(encoded);
             free(encoded);
+
+            // The first value is transaction id which is malloc'ed. Let's free it.
+            // TODO: see comment above.
+            if (idx == 0) {
+              free(pair->value);
+            }
           }
           pair = (QuerystringPair*)&aPairs[++idx];
         }
 
         // The last value is aValue, and is always malloc'ed. Let's free it.
+        // TODO: see comment above.
         free(pair->value);
       }
 

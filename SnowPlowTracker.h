@@ -94,6 +94,7 @@ class SnowPlowTracker
   int track(const QuerystringPair aEventPairs[]) const;
   int getUri(const char *aHost, const int aPort, const char *aPath, const QuerystringPair aPairs[]) const;
 
+  static char *getTransactionId();
   static char *chars2Chars(const char* aChars);
   static char *mac2Chars(const byte* aMac);
   static char *int2Chars(const int aInt);
