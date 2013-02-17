@@ -1,7 +1,7 @@
 /* 
- * SnowPlow Arduino Tracker: Ping Example
+ * SnowPlow Arduino Tracker: Float Ping Example
  *
- * @description Simple ping example for SnowPlow Arduino Tracker
+ * @description Float ping example for SnowPlow Arduino Tracker
  * @version     0.0.1
  * @author      Alex Dean
  * @copyright   SnowPlow Analytics Ltd

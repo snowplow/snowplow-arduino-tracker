@@ -129,7 +129,7 @@ int SnowPlowTracker::trackStructEvent(
   const int aValue) const {
 
   // Cast aValue to char *and call appropriate trackEvent
-  return this->trackStructEvent(aCategory, aAction, aLabel, aProperty, int2Chars(aValue));
+  return this->_trackStructEvent(aCategory, aAction, aLabel, aProperty, int2Chars(aValue));
 }
 
 /**
@@ -167,7 +167,7 @@ int SnowPlowTracker::trackStructEvent(
   const int aValuePrecision) const {
 
   // Cast aValue to char *and call appropriate trackEvent
-  return this->trackStructEvent(aCategory, aAction, aLabel, aProperty, double2Chars(aValue, aValuePrecision));
+  return this->_trackStructEvent(aCategory, aAction, aLabel, aProperty, double2Chars(aValue, aValuePrecision));
 }
 
 /**
@@ -205,7 +205,7 @@ int SnowPlowTracker::trackStructEvent(
   const int aValuePrecision) const {
 
   // Cast aValue to char *and call appropriate trackEvent
-  return this->trackStructEvent(aCategory, aAction, aLabel, aProperty, double2Chars(aValue, aValuePrecision));
+  return this->_trackStructEvent(aCategory, aAction, aLabel, aProperty, double2Chars(aValue, aValuePrecision));
 }
 
 /**
@@ -239,6 +239,43 @@ int SnowPlowTracker::trackStructEvent(
   const char *aProperty,
   const char *aValue) const {
 
+  // Cast aValue to char *and call appropriate trackEvent
+  return this->_trackStructEvent(aCategory, aAction, aLabel, aProperty, chars2Chars(aValue));
+}
+
+/**
+ * Sends a structured event to a SnowPlow
+ * collector. Builds the set of event
+ * name=value pairs and then passes them
+ * to the general-purpose track() to track
+ * the event.
+ *
+ * @param aCategory The name you supply for
+ *        the group of objects you want to track
+ * @param aAction A char *that is uniquely
+ *        paired with each category, and commonly
+ *        used to define the type of user
+ *        interaction for the web object
+ * @param aLabel An optional string
+ *        to provide additional dimensions to the
+ *        event data
+ * @param aProperty An optional string
+ *        describing the object or the action
+ *        performed on it. This might be the
+ *        quantity of an item added to basket
+ * @param aValue A char *value that
+ *        you can use to provide non-numerical data
+ *        about the user event
+ * @return An integer indicating the success/failure
+ *         of logging the event to SnowPlow
+ */ 
+int SnowPlowTracker::_trackStructEvent(
+  const char *aCategory,
+  const char *aAction,
+  const char *aLabel,
+  const char *aProperty,
+  const char *aValue) const {
+
 #ifdef LOGGING
   Serial.print("Tracking structured event: category [");
   Serial.print(aCategory);
@@ -259,11 +296,24 @@ int SnowPlowTracker::trackStructEvent(
     { "ev_ac", (char*)aAction },
     { "ev_la", (char*)aLabel },
     { "ev_pr", (char*)aProperty },
-    { "ev_va", (char*)aValue },
+    { "ev_va", (char*)aValue }, // IMPORTANT: malloc'ed aValue must be last as we will free() later based on position. 
     { NULL, NULL } // Signals end of array
   };
 
-  return this->track(eventPairs);
+  int status = this->track(eventPairs);
+#ifdef LOGGING
+  switch (status) {
+  case SUCCESS:
+    Serial.println("Tracking returned SUCCESS");
+    break;
+  // TODO: add individual error codes
+  default:
+    Serial.println("Tracking returned some failure");
+    break;
+  }
+#endif
+
+  return status;
 }
 
 /**
@@ -342,8 +392,9 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
  * @return the MAC address as a String
  */
 char *SnowPlowTracker::mac2Chars(const byte* aMac) {
-  char *buffer = (char*)malloc(18); // 17 chars plus \0
-  sprintf(buffer, "%02X:%02X:%02X:%02X:%02X:%02X",
+  const size_t bufferLength = 18; // 17 chars plus \0
+  char *buffer = (char*)malloc(bufferLength);
+  snprintf(buffer, bufferLength, "%02X:%02X:%02X:%02X:%02X:%02X",
           aMac[0],
           aMac[1],
           aMac[2],
@@ -373,6 +424,24 @@ int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
 }
 
 /**
+ * Converts chars into malloc'ed
+ * chars. This is so that all
+ * invocation options end up with
+ * a malloc'ed value which can be
+ * freed.
+ *
+ * @param aChars The chars to copy
+ *        into a malloc'ed chars
+ * @return the malloc'ed chars
+ */
+char *SnowPlowTracker::chars2Chars(const char *aChars) {
+  const size_t bufferLength = strlen(aChars);
+  char *buffer = (char*)malloc(bufferLength);
+  strcpy(buffer, aChars);
+  return buffer;
+}
+
+/**
  * Converts an int into a char *.
  *
  * @param aInt The integer to
@@ -380,9 +449,8 @@ int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
  * @return the converted String
  */
 char *SnowPlowTracker::int2Chars(const int aInt) {
-  char buffer[11]; // Max length of Arduino int is -10 digits
-  // TODO: fix this. Won't work. can I use itoa instead?
-  const size_t bufferLength = sizeof(buffer);
+  const size_t bufferLength = 12; // "-2147483648\0"
+  char *buffer = (char*)malloc(bufferLength);
   snprintf(buffer, bufferLength, "%d", aInt);
   return buffer;
 }
@@ -399,7 +467,8 @@ char *SnowPlowTracker::int2Chars(const int aInt) {
  * @return the converted String
  */
 char *SnowPlowTracker::double2Chars(const double aDouble, const int aPrecision) {
-  char buffer[25];
+  const size_t bufferLength = 25;
+  char *buffer = (char*)malloc(bufferLength);
   dtostrf(aDouble, 1, aPrecision, buffer);
   return buffer;
 }
@@ -468,10 +537,6 @@ int SnowPlowTracker::getUri(
   const char *aPath,
   const QuerystringPair aPairs[]) const {
 
-  Serial.print("Host is [");
-  Serial.print(aHost);
-  Serial.print("]");
-
   // Connect to the host
   if (this->client->connect(aHost, aPort)) {
     // if (this->client->connected()) {
@@ -508,6 +573,9 @@ int SnowPlowTracker::getUri(
           }
           pair = (QuerystringPair*)&aPairs[++idx];
         }
+
+        // The last value is aValue, and is always malloc'ed. Let's free it.
+        free(pair->value);
       }
 
       // 3. Finish the GET definition

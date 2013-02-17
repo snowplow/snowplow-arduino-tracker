@@ -1,7 +1,7 @@
 /* 
- * SnowPlow Arduino Tracker: Ping Example
+ * SnowPlow Arduino Tracker: String Ping Example
  *
- * @description Simple ping example for SnowPlow Arduino Tracker
+ * @description String ping example for SnowPlow Arduino Tracker
  * @version     0.0.1
  * @author      Alex Dean
  * @copyright   SnowPlow Analytics Ltd
