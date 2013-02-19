@@ -296,7 +296,7 @@ int SnowPlowTracker::_trackStructEvent(
     { "ev_ac", (char*)aAction },
     { "ev_la", (char*)aLabel },
     { "ev_pr", (char*)aProperty },
-    { "ev_va", (char*)aValue }, // IMPORTANT: malloc'ed aValue must be last as we will free() later based on position. 
+    { "ev_va", (char*)aValue }, 
     { NULL, NULL } // Signals end of array
   };
 
@@ -520,7 +520,8 @@ char SnowPlowTracker::char2Hex(const char aChar) {
  */
 char *SnowPlowTracker::urlEncode(const char* aStr)
 {
-  char *pstr = (char*)aStr, *encodedStr = (char*)malloc(strlen(aStr) * 3 + 1), *pbuf = encodedStr;
+  const size_t bufferLength = strlen(aStr) * 3 + 1;
+  char *pstr = (char*)aStr, *encodedStr = (char*)malloc(bufferLength), *pbuf = encodedStr;
   while (*pstr) {
     if (isalnum(*pstr) || *pstr == '-' || *pstr == '_' || *pstr == '.' || *pstr == '~') 
       *pbuf++ = *pstr;
@@ -569,10 +570,6 @@ int SnowPlowTracker::getUri(
       Serial.print(aPath);
 
       // 2. The querychar *name-value pairs
-      // TODO: if we urlescape prior to this method, then
-      // maybe we could just consistently free()
-      // each value rather than have edge cases where we
-      // have to use free().
       if (aPairs != NULL) {
         this->client->print("?");
         Serial.print("?");
