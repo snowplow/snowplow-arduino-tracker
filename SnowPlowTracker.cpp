@@ -334,21 +334,19 @@ void SnowPlowTracker::init(const char *aHost) {
  */
 int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
 
-  // First combine the two sets of events
-  const int eventPairCount = countPairs(aEventPairs);
-  const int fixedPairCount = 6;
-
   char *txnId = this->getTransactionId();
 
+  const int fixedPairCount = 6; // Update this if more pairs added below.
   QuerystringPair qsPairs[fixedPairCount + this->kMaxEventPairs] = {
     { "tid", (char*)txnId },
-    { "p", (char*)this->kTrackerPlatform },
+    { "p",   (char*)this->kTrackerPlatform },
     { "mac", (char*)this->macAddress },
     { "uid", (char*)this->userId },
     { "aid", (char*)this->appId },
-    { "tv", (char*)this->kTrackerVersion }
+    { "tv",  (char*)this->kTrackerVersion }
   };
 
+  const int eventPairCount = countPairs(aEventPairs);
   for (int i = 0; i < eventPairCount; i++) {
     qsPairs[fixedPairCount + i].name = aEventPairs[i].name;
     qsPairs[fixedPairCount + i].value = aEventPairs[i].value;
