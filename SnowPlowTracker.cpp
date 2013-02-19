@@ -26,6 +26,8 @@
 #include <Ethernet.h>
 #include <EthernetClient.h>
 
+// Logging
+
 #define LOGGING // Switch off before release
 
 // Initialize constants
@@ -91,11 +93,9 @@ void SnowPlowTracker::initUrl(const char *aHost) {
 void SnowPlowTracker::setUserId(char *aUserId) {
   this->userId = aUserId;
 
-#ifdef LOGGING
-  Serial.print("SnowPlow user id updated to [");
-  Serial.print(this->userId);
-  Serial.println("]");
-#endif
+  LOG_INFO("SnowPlow user id updated to [");
+  LOG_INFO(this->userId);
+  LOGLN_INFO("]");
 }
 
 /**
@@ -248,19 +248,17 @@ int SnowPlowTracker::trackStructEvent(
   const char *aProperty,
   const char *aValue) const {
 
-#ifdef LOGGING
-  Serial.print("Tracking structured event: category [");
-  Serial.print(aCategory);
-  Serial.print("], action [");
-  Serial.print(aAction);
-  Serial.print("], label [");
-  Serial.print(aLabel);
-  Serial.print("], property [");
-  Serial.print(aProperty);
-  Serial.print("], value [");
-  Serial.print(aValue);  
-  Serial.println("]");
-#endif
+  LOG_INFO("Tracking structured event: category [");
+  LOG_INFO(aCategory);
+  LOG_INFO("], action [");
+  LOG_INFO(aAction);
+  LOG_INFO("], label [");
+  LOG_INFO(aLabel);
+  LOG_INFO("], property [");
+  LOG_INFO(aProperty);
+  LOG_INFO("], value [");
+  LOG_INFO(aValue);  
+  LOGLN_INFO("]");
 
   const QuerystringPair eventPairs[] = {
     { "e", "se" }, // Structured event
@@ -273,17 +271,15 @@ int SnowPlowTracker::trackStructEvent(
   };
 
   const int status = this->track(eventPairs);
-#ifdef LOGGING
   switch (status) {
   case SUCCESS:
-    Serial.println("Tracking returned SUCCESS");
+    LOGLN_INFO("Tracking returned SUCCESS");
     break;
   // TODO: add individual error codes
   default:
-    Serial.println("Tracking returned some failure");
+    LOGLN_ERROR("Tracking returned unknown error (should never happen)");
     break;
   }
-#endif
 
   return status;
 }
@@ -308,16 +304,15 @@ void SnowPlowTracker::init(const char *aHost) {
   delay(1000); // Wait 1 sec
   this->client = new EthernetClient();
 
-#ifdef LOGGING
-  Serial.print("Ethernet booted with MAC address [");
-  Serial.print(this->macAddress);
-  Serial.print("], local IP address [");
-  Serial.print(this->ethernet->localIP());
-  Serial.println("]");
-  Serial.print("SnowPlowTracker initialized with collector host [");
-  Serial.print(this->collectorHost);
-  Serial.println("]");
-#endif
+  LOG_INFO("Ethernet booted with MAC address [");
+  LOG_INFO(this->macAddress);
+  LOG_INFO("], local IP address [");
+  LOG_INFO(this->ethernet->localIP());
+  LOGLN_INFO("]");
+  
+  LOG_INFO("SnowPlowTracker initialized with collector host [");
+  LOG_INFO(this->collectorHost);
+  LOGLN_INFO("]");
 }
 
 /**
@@ -526,14 +521,14 @@ int SnowPlowTracker::getUri(
       // Build our GET line from:
       // 1. The URI path... 
       this->client->print("GET ");
-      Serial.print("GET ");
+      LOG_DEBUG("GET ");
       this->client->print(aPath);
-      Serial.print(aPath);
+      LOG_DEBUG(aPath);
 
       // 2. The querychar *name-value pairs
       if (aPairs != NULL) {
         this->client->print("?");
-        Serial.print("?");
+        LOG_DEBUG("?");
         char idx = 0;
         QuerystringPair* pair = (QuerystringPair*)&aPairs[0];
         // Loop for all pairs
@@ -542,18 +537,18 @@ int SnowPlowTracker::getUri(
           if (pair->value != NULL) {
             if (idx > 0) {
               this->client->print("&");
-              Serial.print("&");
+              LOG_DEBUG("&");
             }
             
             this->client->print(pair->name);
-            Serial.print(pair->name);
+            LOG_DEBUG(pair->name);
 
             this->client->print("=");
-            Serial.print("=");
+            LOG_DEBUG("=");
             
             char *encoded = urlEncode(pair->value);
             this->client->print(encoded);
-            Serial.print(encoded);
+            LOG_DEBUG(encoded);
             free(encoded);
           }
           pair = (QuerystringPair*)&aPairs[++idx];
@@ -562,7 +557,7 @@ int SnowPlowTracker::getUri(
 
       // 3. Finish the GET definition
       this->client->println(" HTTP/1.1");
-      Serial.println(" HTTP/1.1");
+      LOGLN_DEBUG(" HTTP/1.1");
 
       // Headers
       this->client->print("Host: ");

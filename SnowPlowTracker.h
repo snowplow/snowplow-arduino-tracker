@@ -26,6 +26,43 @@
 #include <Ethernet.h>
 #include <EthernetClient.h>
 
+// Logging - adapted from https://github.com/dmcrodrigues/macro-logger
+#define NO_LOG          0x00
+#define ERROR_LEVEL     0x01
+#define INFO_LEVEL      0x02
+#define DEBUG_LEVEL     0x03
+
+#ifndef LOG_LEVEL
+#define LOG_LEVEL   DEBUG_LEVEL
+#endif
+
+#define SERIALPRINT(...) Serial.print(__VA_ARGS__)
+#define SERIALPRINTLN(...) Serial.println(__VA_ARGS__)
+
+#if LOG_LEVEL >= DEBUG_LEVEL
+#define LOG_DEBUG(...)     SERIALPRINT(__VA_ARGS__)
+#define LOGLN_DEBUG(...)   SERIALPRINTLN(__VA_ARGS__)
+#else
+#define LOG_DEBUG(...)
+#define LOGLN_DEBUG(...)
+#endif
+
+#if LOG_LEVEL >= INFO_LEVEL
+#define LOG_INFO(...)      SERIALPRINT(__VA_ARGS__)
+#define LOGLN_INFO(...)    SERIALPRINTLN(__VA_ARGS__)
+#else
+#define LOG_INFO(...)
+#define LOGLN_INFO(...)
+#endif
+
+#if LOG_LEVEL >= ERROR_LEVEL
+#define LOG_ERROR(...)     SERIALPRINT(__VA_ARGS__)
+#define LOGLN_ERROR(...)   SERIALPRINTLN(__VA_ARGS__)
+#else
+#define LOG_ERROR(...)
+#define LOGLN_ERROR(...)
+#endif
+
 /**
  * SnowPlowTracker encapsulates our Arduino
  * tracking code for SnowPlow.
