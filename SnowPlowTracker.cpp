@@ -128,7 +128,7 @@ int SnowPlowTracker::trackStructEvent(
   const char *aProperty,
   const int aValue) const {
 
-  const char *value = int2Chars(aValue);
+  char *value = int2Chars(aValue);
   const int status = this->trackStructEvent(aCategory, aAction, aLabel, aProperty, value);
   free(value);
   return status;
@@ -168,7 +168,7 @@ int SnowPlowTracker::trackStructEvent(
   const double aValue,
   const int aValuePrecision) const {
 
-  const char *value = double2Chars(aValue, aValuePrecision);
+  char *value = double2Chars(aValue, aValuePrecision);
   const int status = this->trackStructEvent(aCategory, aAction, aLabel, aProperty, value);
   free(value);
   return status;
@@ -208,7 +208,7 @@ int SnowPlowTracker::trackStructEvent(
   const float aValue,
   const int aValuePrecision) const {
 
-  const char *value = double2Chars(aValue, aValuePrecision);
+  char *value = double2Chars(aValue, aValuePrecision);
   const int status = this->trackStructEvent(aCategory, aAction, aLabel, aProperty, value);
   free(value);
   return status;
@@ -337,7 +337,7 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
   const int eventPairCount = countPairs(aEventPairs);
   const int fixedPairCount = 6;
 
-  const char *txnId = this->getTransactionId();
+  char *txnId = this->getTransactionId();
 
   QuerystringPair qsPairs[fixedPairCount + this->kMaxEventPairs] = {
     { "tid", (char*)txnId },
@@ -382,13 +382,16 @@ char *SnowPlowTracker::getTransactionId() {
  * into a String. Generated char *is
  * of the format: "00:01:0A:2E:05:0B"
  *
+ * IMPORTANT: be sure to free() the returned
+ * string after use
+ *
  * @param aMac The MAC address, in bytes,
  *             to convert
  * @return the MAC address as a String
  */
 char *SnowPlowTracker::mac2Chars(const byte* aMac) {
   const size_t bufferLength = 18; // 17 chars plus \0
-  const char *buffer = (char*)malloc(bufferLength);
+  char *buffer = (char*)malloc(bufferLength);
   snprintf(buffer, bufferLength, "%02X:%02X:%02X:%02X:%02X:%02X",
           aMac[0],
           aMac[1],
@@ -421,6 +424,9 @@ int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
 /**
  * Converts an int into a char *.
  *
+ * IMPORTANT: be sure to free() the returned
+ * string after use
+ *
  * @param aInt The integer to
  *        convert into a char *
  * @return the converted String
@@ -438,6 +444,9 @@ char *SnowPlowTracker::int2Chars(const int aInt) {
  * 1 or more characters long, with the
  * number of digits after the decimal
  * point specified by `aPrecision`.
+ *
+ * IMPORTANT: be sure to free() the returned
+ * string after use
  *
  * @param aDbl The double (or float) to
  *        convert into a String
@@ -540,14 +549,17 @@ int SnowPlowTracker::getUri(
               this->client->print("&");
               Serial.print("&");
             }
+            
             this->client->print(pair->name);
             Serial.print(pair->name);
+
             this->client->print("=");
             Serial.print("=");
-            const char *encoded = urlEncode(pair->value);
+            
+            char *encoded = urlEncode(pair->value);
             this->client->print(encoded);
             Serial.print(encoded);
-            free(encoded); // Don't need the malloc'ed url-encoded version any more
+            free(encoded);
           }
           pair = (QuerystringPair*)&aPairs[++idx];
         }
