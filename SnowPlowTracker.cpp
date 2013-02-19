@@ -20,6 +20,7 @@
  */
 
 #include <stdlib.h>
+#include <limits.h>
 #include <SPI.h>
 #include "SnowPlowTracker.h"
 #include <Ethernet.h>
@@ -360,9 +361,7 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
 
 /**
  * Returns the transaction ID for this
- * track event.
- *
- * Uses micros() and casts to an int.
+ * track event. Uses random().
  *
  * IMPORTANT: be sure to free() the returned
  * string after use
@@ -371,8 +370,8 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
  *         millis() cast to an integer
  */
 char *SnowPlowTracker::getTransactionId() {
-  const int txnId = micros() % 10000; // Pull down from long to int
-  return int2Chars(txnId);
+  const int rndm = (int)random(INT_MAX); // Restrict to int range
+  return int2Chars(rndm);
 }
 
 /**
