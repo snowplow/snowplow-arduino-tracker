@@ -128,8 +128,10 @@ int SnowPlowTracker::trackStructEvent(
   const char *aProperty,
   const int aValue) const {
 
-  // Cast aValue to char *and call appropriate trackEvent
-  return this->_trackStructEvent(aCategory, aAction, aLabel, aProperty, int2Chars(aValue));
+  const char *value = int2Chars(aValue);
+  const int status = this->trackStructEvent(aCategory, aAction, aLabel, aProperty, value);
+  free(value);
+  return status;
 }
 
 /**
@@ -166,8 +168,10 @@ int SnowPlowTracker::trackStructEvent(
   const double aValue,
   const int aValuePrecision) const {
 
-  // Cast aValue to char *and call appropriate trackEvent
-  return this->_trackStructEvent(aCategory, aAction, aLabel, aProperty, double2Chars(aValue, aValuePrecision));
+  const char *value = double2Chars(aValue, aValuePrecision);
+  const int status = this->trackStructEvent(aCategory, aAction, aLabel, aProperty, value);
+  free(value);
+  return status;
 }
 
 /**
@@ -204,43 +208,10 @@ int SnowPlowTracker::trackStructEvent(
   const float aValue,
   const int aValuePrecision) const {
 
-  // Cast aValue to char *and call appropriate trackEvent
-  return this->_trackStructEvent(aCategory, aAction, aLabel, aProperty, double2Chars(aValue, aValuePrecision));
-}
-
-/**
- * Tracks a structured event to a
- * SnowPlow collector: version
- * where the value field is a String.
- *
- * @param aCategory The name you supply for
- *        the group of objects you want to track
- * @param aAction A char *that is uniquely
- *        paired with each category, and commonly
- *        used to define the type of user
- *        interaction for the web object
- * @param aLabel An optional string
- *        to provide additional dimensions to the
- *        event data
- * @param aProperty An optional string
- *        describing the object or the action
- *        performed on it. This might be the
- *        quantity of an item added to basket
- * @param aValue A char *value that
- *        you can use to provide non-numerical data
- *        about the user event
- * @return An integer indicating the success/failure
- *         of logging the event to SnowPlow
- */ 
-int SnowPlowTracker::trackStructEvent(
-  const char *aCategory,
-  const char *aAction,
-  const char *aLabel,
-  const char *aProperty,
-  const char *aValue) const {
-
-  // Cast aValue to char *and call appropriate trackEvent
-  return this->_trackStructEvent(aCategory, aAction, aLabel, aProperty, chars2Chars(aValue));
+  const char *value = double2Chars(aValue, aValuePrecision);
+  const int status = this->trackStructEvent(aCategory, aAction, aLabel, aProperty, value);
+  free(value);
+  return status;
 }
 
 /**
@@ -269,7 +240,7 @@ int SnowPlowTracker::trackStructEvent(
  * @return An integer indicating the success/failure
  *         of logging the event to SnowPlow
  */ 
-int SnowPlowTracker::_trackStructEvent(
+int SnowPlowTracker::trackStructEvent(
   const char *aCategory,
   const char *aAction,
   const char *aLabel,
@@ -300,7 +271,7 @@ int SnowPlowTracker::_trackStructEvent(
     { NULL, NULL } // Signals end of array
   };
 
-  int status = this->track(eventPairs);
+  const int status = this->track(eventPairs);
 #ifdef LOGGING
   switch (status) {
   case SUCCESS:
@@ -366,8 +337,10 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
   const int eventPairCount = countPairs(aEventPairs);
   const int fixedPairCount = 6;
 
+  const char *txnId = this->getTransactionId();
+
   QuerystringPair qsPairs[fixedPairCount + this->kMaxEventPairs] = {
-    { "tid", this->getTransactionId() },
+    { "tid", (char*)txnId },
     { "p", (char*)this->kTrackerPlatform },
     { "mac", (char*)this->macAddress },
     { "uid", (char*)this->userId },
@@ -380,14 +353,16 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
     qsPairs[fixedPairCount + i].value = aEventPairs[i].value;
   }
 
-  return this->getUri(this->collectorHost, this->kCollectorPort, "/i", qsPairs);
+  const int status = this->getUri(this->collectorHost, this->kCollectorPort, "/i", qsPairs);
+  free(txnId);
+  return status;
 }
 
 /**
  * Returns the transaction ID for this
  * track event.
  *
- * Uses millis() and casts to an int. For
+ * Uses micros() and casts to an int. For
  * background see:
  *
  * http://www.cmiyc.com/blog/2012/07/16/arduino-how-do-you-reset-millis/
@@ -399,7 +374,7 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
  *         millis() cast to an integer
  */
 char *SnowPlowTracker::getTransactionId() {
-  return int2Chars((unsigned int)millis());
+  return int2Chars((unsigned int)micros());
 }
 
 /**
@@ -413,7 +388,7 @@ char *SnowPlowTracker::getTransactionId() {
  */
 char *SnowPlowTracker::mac2Chars(const byte* aMac) {
   const size_t bufferLength = 18; // 17 chars plus \0
-  char *buffer = (char*)malloc(bufferLength);
+  const char *buffer = (char*)malloc(bufferLength);
   snprintf(buffer, bufferLength, "%02X:%02X:%02X:%02X:%02X:%02X",
           aMac[0],
           aMac[1],
@@ -441,24 +416,6 @@ int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
     i++;
   }
   return i;
-}
-
-/**
- * Converts chars into malloc'ed
- * chars. This is so that all
- * invocation options end up with
- * a malloc'ed value which can be
- * freed.
- *
- * @param aChars The chars to copy
- *        into a malloc'ed chars
- * @return the malloc'ed chars
- */
-char *SnowPlowTracker::chars2Chars(const char *aChars) {
-  const size_t bufferLength = strlen(aChars);
-  char *buffer = (char*)malloc(bufferLength);
-  strcpy(buffer, aChars);
-  return buffer;
 }
 
 /**
@@ -587,23 +544,13 @@ int SnowPlowTracker::getUri(
             Serial.print(pair->name);
             this->client->print("=");
             Serial.print("=");
-            char *encoded = urlEncode(pair->value);
+            const char *encoded = urlEncode(pair->value);
             this->client->print(encoded);
             Serial.print(encoded);
-            free(encoded);
-
-            // The first value is transaction id which is malloc'ed. Let's free it.
-            // TODO: see comment above.
-            if (idx == 0) {
-              free(pair->value);
-            }
+            free(encoded); // Don't need the malloc'ed url-encoded version any more
           }
           pair = (QuerystringPair*)&aPairs[++idx];
         }
-
-        // The last value is aValue, and is always malloc'ed. Let's free it.
-        // TODO: see comment above.
-        free(pair->value);
       }
 
       // 3. Finish the GET definition
