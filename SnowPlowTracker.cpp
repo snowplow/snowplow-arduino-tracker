@@ -362,10 +362,7 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
  * Returns the transaction ID for this
  * track event.
  *
- * Uses micros() and casts to an int. For
- * background see:
- *
- * http://www.cmiyc.com/blog/2012/07/16/arduino-how-do-you-reset-millis/
+ * Uses micros() and casts to an int.
  *
  * IMPORTANT: be sure to free() the returned
  * string after use
@@ -374,7 +371,8 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
  *         millis() cast to an integer
  */
 char *SnowPlowTracker::getTransactionId() {
-  return int2Chars((unsigned int)micros());
+  const int txnId = micros() % 10000; // Pull down from long to int
+  return int2Chars(txnId);
 }
 
 /**
