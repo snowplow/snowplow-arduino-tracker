@@ -478,6 +478,7 @@ char *SnowPlowTracker::urlEncode(const char* aStr)
 {
   const size_t bufferLength = strlen(aStr) * 3 + 1;
   char *pstr = (char*)aStr, *encodedStr = (char*)malloc(bufferLength), *pbuf = encodedStr;
+  
   while (*pstr) {
     if (isalnum(*pstr) || *pstr == '-' || *pstr == '_' || *pstr == '.' || *pstr == '~') 
       *pbuf++ = *pstr;
@@ -486,6 +487,7 @@ char *SnowPlowTracker::urlEncode(const char* aStr)
     pstr++;
   }
   *pbuf = '\0'; // Tail it
+  
   return encodedStr;
 }
 
@@ -572,6 +574,7 @@ int SnowPlowTracker::getUri(
       // End of headers
 
       // TODO: check return value
+      // https://github.com/amcewen/HttpClient/blob/master/HttpClient.cpp
       // https://github.com/exosite-garage/arduino_exosite_library/blob/master/Exosite.cpp
   } else {
     // Connection didn't work
