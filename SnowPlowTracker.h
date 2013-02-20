@@ -33,7 +33,7 @@
 #define DEBUG_LEVEL     0x03
 
 #ifndef LOG_LEVEL
-#define LOG_LEVEL   DEBUG_LEVEL
+#define LOG_LEVEL   NO_LOG
 #endif
 
 #define SERIALPRINT(...) Serial.print(__VA_ARGS__)
