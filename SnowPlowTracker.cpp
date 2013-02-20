@@ -22,13 +22,11 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <SPI.h>
-#include "SnowPlowTracker.h"
 #include <Ethernet.h>
 #include <EthernetClient.h>
 
-// Logging
-
-#define LOGGING // Switch off before release
+#define LOG_LEVEL   0x03 // Change to 0x00 aka NO_LOG before release
+#include "SnowPlowTracker.h"
 
 // Initialize constants
 const char *SnowPlowTracker::kUserAgent = "Arduino/2.0";
