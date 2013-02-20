@@ -24,10 +24,6 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #include <EthernetClient.h>
-
-#ifndef LOG_LEVEL
-#define LOG_LEVEL   0x03 // Change to 0x00 aka NO_LOG before release
-#endif
 #include "SnowPlowTracker.h"
 
 // Initialize constants
@@ -518,64 +514,62 @@ int SnowPlowTracker::getUri(
 
   // Connect to the host
   if (this->client->connect(aHost, aPort)) {
-    // if (this->client->connected()) {
+    // Build our GET line from:
+    // 1. The URI path... 
+    this->client->print("GET ");
+    LOG_DEBUG("GET ");
+    this->client->print(aPath);
+    LOG_DEBUG(aPath);
 
-      // Build our GET line from:
-      // 1. The URI path... 
-      this->client->print("GET ");
-      LOG_DEBUG("GET ");
-      this->client->print(aPath);
-      LOG_DEBUG(aPath);
-
-      // 2. The querychar *name-value pairs
-      if (aPairs != NULL) {
-        this->client->print("?");
-        LOG_DEBUG("?");
-        char idx = 0;
-        QuerystringPair* pair = (QuerystringPair*)&aPairs[0];
-        // Loop for all pairs
-        while (pair->name != NULL) {
-          // Only add if value is not null
-          if (pair->value != NULL) {
-            if (idx > 0) {
-              this->client->print("&");
-              LOG_DEBUG("&");
-            }
-            
-            this->client->print(pair->name);
-            LOG_DEBUG(pair->name);
-
-            this->client->print("=");
-            LOG_DEBUG("=");
-            
-            char *encoded = urlEncode(pair->value);
-            this->client->print(encoded);
-            LOG_DEBUG(encoded);
-            free(encoded);
+    // 2. The querychar *name-value pairs
+    if (aPairs != NULL) {
+      this->client->print("?");
+      LOG_DEBUG("?");
+      char idx = 0;
+      QuerystringPair* pair = (QuerystringPair*)&aPairs[0];
+      // Loop for all pairs
+      while (pair->name != NULL) {
+        // Only add if value is not null
+        if (pair->value != NULL) {
+          if (idx > 0) {
+            this->client->print("&");
+            LOG_DEBUG("&");
           }
-          pair = (QuerystringPair*)&aPairs[++idx];
+          
+          this->client->print(pair->name);
+          LOG_DEBUG(pair->name);
+
+          this->client->print("=");
+          LOG_DEBUG("=");
+          
+          char *encoded = urlEncode(pair->value);
+          this->client->print(encoded);
+          LOG_DEBUG(encoded);
+          free(encoded);
         }
+        pair = (QuerystringPair*)&aPairs[++idx];
       }
+    }
 
-      // 3. Finish the GET definition
-      this->client->println(" HTTP/1.1");
-      LOGLN_DEBUG(" HTTP/1.1");
+    // 3. Finish the GET definition
+    this->client->println(" HTTP/1.1");
+    LOGLN_DEBUG(" HTTP/1.1");
 
-      // Headers
-      this->client->print("Host: ");
-      this->client->println(aHost);
+    // Headers
+    this->client->print("Host: ");
+    this->client->println(aHost);
 
-      this->client->print("User-Agent: ");
-      this->client->println(this->kUserAgent);
+    this->client->print("User-Agent: ");
+    this->client->println(this->kUserAgent);
 
-      this->client->println("Connection: close");
+    this->client->println("Connection: close");
 
-      this->client->println();
-      // End of headers
+    this->client->println();
+    // End of headers
 
-      // TODO: check return value
-      // https://github.com/amcewen/HttpClient/blob/master/HttpClient.cpp
-      // https://github.com/exosite-garage/arduino_exosite_library/blob/master/Exosite.cpp
+    // TODO: check return value
+    // https://github.com/amcewen/HttpClient/blob/master/HttpClient.cpp
+    // https://github.com/exosite-garage/arduino_exosite_library/blob/master/Exosite.cpp
   } else {
     // Connection didn't work
     return SnowPlowTracker::ERROR_CONNECTION_FAILED;

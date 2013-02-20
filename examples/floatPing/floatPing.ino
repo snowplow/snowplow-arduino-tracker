@@ -21,9 +21,8 @@
 
 #include <SPI.h>
 #include <Ethernet.h>
+#define LOG_LEVEL   0x03
 #include <SnowPlowTracker.h>
-
-#define LOGGING
 
 // MAC address of this Arduino. Update with your shield's MAC address.
 const byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0xF8, 0xA0 };
