@@ -8,7 +8,7 @@ With this tracker you can collect sensor- and eventstream data from your Arduino
 
 * Deploy a set of SnowPlow-connected Arduinos to monitor the environment (temperature, humidity, light levels etc) in your warehouse/factory/workplace/shop/museum
 * Track the movement of products around your shop/warehouse/factory using Arduino, [RFID readers] [rfid] and SnowPlow
-* Send vehicle fleet information (locations, speeds, fuel levels) back to SnowPlow using Arduino's [3G and GPS] [3g-gps] shields 
+* Send vehicle fleet information (locations, speeds, fuel levels etc) back to SnowPlow using Arduino's [3G and GPS] [3g-gps] shields 
 
 ## Copyright and license
 
