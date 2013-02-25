@@ -62,10 +62,8 @@ SnowPlowTracker::SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, con
  *        e.g. "d3rkrsqgmqf"
  */
 void SnowPlowTracker::initCf(const char *aCfSubdomain) {
-
   const size_t hostLength = strlen(aCfSubdomain) + 16; // .cloudfront.net\0 = 16
   char *host = (char*)malloc(hostLength);
-
   snprintf(host, hostLength, "%s.cloudfront.net", aCfSubdomain);
   this->init(host);
 }
