@@ -2,7 +2,7 @@
 
 ## Overview
 
-An event tracker for IP-connected [Arduino] [arduino] boards, the SnowPlow Arduino Tracker is our first event tracker targeting the [Internet of Things] [iot].
+An event tracker for IP-connected [Arduino] [arduino] boards, the SnowPlow Arduino Tracker is our first event tracker for the [Internet of Things] [iot].
 
 With this tracker you can collect sensor- and eventstream data from your Arduino-based projects and send it back to your [SnowPlow] [snowplow] server. Some project ideas:
 
