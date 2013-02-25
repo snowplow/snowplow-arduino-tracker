@@ -518,8 +518,8 @@ int SnowPlowTracker::getResponseCode() const {
     // Make sure the status code is reset, and likewise the state.
     // Lets us easily cope with 1xx informational responses by just
     // ignoring them really, and reading the next line for a proper response
-    iStatusCode = 0;
-    iState = eRequestSent;
+    statusCode = 0;
+    httpState = eRequestSent;
 
     unsigned long timeoutStart = millis();
     // Psuedo-regexp we're expecting before the status-code
