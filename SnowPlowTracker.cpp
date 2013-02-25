@@ -542,7 +542,7 @@ int SnowPlowTracker::getResponseCode() const {
                 httpState = eReadingStatusCode;
               }
             } else {
-              return SnowPlowTracker::HTTP_INVALID_RESPONSE;
+              return SnowPlowTracker::ERROR_INVALID_RESPONSE;
             }
             break;
           case eReadingStatusCode:
@@ -574,7 +574,7 @@ int SnowPlowTracker::getResponseCode() const {
 
   // If we've read a status code successfully but it's informational (1xx)
   // loop back to the start
-  } while ((httpState == eStatusCodeRead) && (statusCode < 200) );
+  } while ((httpState == eStatusCodeRead) && (statusCode < 200));
 
   // Now return status code as appropriate
   if ((c == '\n') && (httpState == eStatusCodeRead)) {
