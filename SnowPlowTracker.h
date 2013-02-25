@@ -101,7 +101,7 @@ class SnowPlowTracker
   static const char *kTrackerVersion;
   static const int kCollectorPort = 80; // Default port
   static const int kMaxEventPairs = 7; // 6 fields plus trailing NULL indicator
-  static const int kHttpResponseTimeout = 10*1000; // ms to wait before sending timeout
+  static const int kHttpResponseTimeout = 15*1000; // ms to wait before sending timeout
   static const int kHttpWaitForDataDelay = 750; // ms to wait each time there's no data available
 
   // Struct to hold a querychar *name-value pair

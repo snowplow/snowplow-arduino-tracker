@@ -21,7 +21,6 @@
 
 #include <SPI.h>
 #include <Ethernet.h>
-#define LOG_LEVEL   0x03
 #include <SnowPlowTracker.h>
 
 // MAC address of this Arduino. Update with your shield's MAC address.

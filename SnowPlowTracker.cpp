@@ -24,6 +24,8 @@
 #include <SPI.h>
 #include <Ethernet.h>
 #include <EthernetClient.h>
+
+#define LOG_LEVEL   0x03 // Change to 0x01 publishing
 #include "SnowPlowTracker.h"
 
 // Initialize constants
@@ -61,7 +63,7 @@ SnowPlowTracker::SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, con
  */
 void SnowPlowTracker::initCf(const char *aCfSubdomain) {
 
-  const size_t hostLength = sizeof(aCfSubdomain) + 16; // .cloudfront.net\0 = 16
+  const size_t hostLength = strlen(aCfSubdomain) + 16; // .cloudfront.net\0 = 16
   char *host = (char*)malloc(hostLength);
 
   snprintf(host, hostLength, "%s.cloudfront.net", aCfSubdomain);
@@ -347,7 +349,7 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
     LOGLN_ERROR("Tracking returned ERROR_INVALID_RESPONSE");
     break;
   default:
-    LOG_INFO("Tracking returned SUCCESS with HTTP Status Code: ");
+    LOG_INFO("Tracking returned HTTP Status Code: ");
     LOGLN_INFO(status);
     break;
   }
@@ -667,7 +669,9 @@ int SnowPlowTracker::getUri(
     // End of headers
 
     // Check and return HTTP status code value
-    return getResponseCode();
+    const int code = getResponseCode();
+    this->client->stop(); // Important: close the connection
+    return code;
   } else {
     // Connection didn't work
     return SnowPlowTracker::ERROR_CONNECTION_FAILED;
