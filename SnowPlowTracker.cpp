@@ -267,16 +267,6 @@ int SnowPlowTracker::trackStructEvent(
   };
 
   const int status = this->track(eventPairs);
-  switch (status) {
-  case SUCCESS:
-    LOGLN_INFO("Tracking returned SUCCESS");
-    break;
-  // TODO: add individual error codes
-  default:
-    LOGLN_ERROR("Tracking returned unknown error (should never happen)");
-    break;
-  }
-
   return status;
 }
 
@@ -345,6 +335,22 @@ int SnowPlowTracker::track(const QuerystringPair aEventPairs[]) const {
 
   const int status = this->getUri(this->collectorHost, this->kCollectorPort, "/i", qsPairs);
   free(txnId);
+
+  switch (status) {
+  case ERROR_CONNECTION_FAILED:
+    LOGLN_ERROR("Tracking returned ERROR_CONNECTION_FAILED");
+    break;
+  case ERROR_TIMED_OUT:
+    LOGLN_ERROR("Tracking returned ERROR_TIMED_OUT");
+    break;
+  case ERROR_INVALID_RESPONSE:
+    LOGLN_ERROR("Tracking returned ERROR_INVALID_RESPONSE");
+    break;
+  default:
+    LOG_INFO("Tracking returned SUCCESS with HTTP Status Code: ");
+    LOGLN_INFO(status);
+    break;
+  }
   return status;
 }
 
@@ -488,6 +494,102 @@ char *SnowPlowTracker::urlEncode(const char* aStr)
 }
 
 /**
+ * Return the HTTP status code from this request.
+ *
+ * Parses a Status-Line like:
+ *   HTTP-Version SP Status-Code SP Reason-Phrase CRLF
+ * Where HTTP-Version is of the form:
+ *   HTTP-Version   = "HTTP" "/" 1*DIGIT "." 1*DIGIT
+ *
+ * Simplified from:
+ *
+ * https://github.com/amcewen/HttpClient/blob/master/HttpClient.cpp
+ * https://github.com/exosite-garage/arduino_exosite_library/blob/master/Exosite.cpp 
+ *
+ * @return the HTTP status code as an int
+ */ 
+int SnowPlowTracker::getResponseCode() const {
+  int statusCode;
+  HttpState httpState;
+
+  char c = '\0';
+  do
+  {
+    // Make sure the status code is reset, and likewise the state.
+    // Lets us easily cope with 1xx informational responses by just
+    // ignoring them really, and reading the next line for a proper response
+    iStatusCode = 0;
+    iState = eRequestSent;
+
+    unsigned long timeoutStart = millis();
+    // Psuedo-regexp we're expecting before the status-code
+    const char* statusPrefix = "HTTP/*.* ";
+    const char* statusPtr = statusPrefix;
+    
+    // Whilst we haven't timed out & haven't reached the end of the headers
+    while ((c != '\n') && ((millis() - timeoutStart) < this->kHttpResponseTimeout )) {
+      if (this->client->available()) {
+        c = this->client->read();
+        if (c != -1) {
+          switch (httpState) {
+          case eRequestSent:
+            // We haven't reached the status code yet
+            if ((*statusPtr == '*') || (*statusPtr == c)) {
+              // This character matches, just move along
+              statusPtr++;
+              if (*statusPtr == '\0') {
+                // We've reached the end of the prefix
+                httpState = eReadingStatusCode;
+              }
+            } else {
+              return SnowPlowTracker::HTTP_INVALID_RESPONSE;
+            }
+            break;
+          case eReadingStatusCode:
+            if (isdigit(c)) {
+              // This assumes we won't get more than the 3 digits we want
+              statusCode = statusCode*10 + (c - '0');
+            } else {
+              // We've reached the end of the status code
+              httpState = eStatusCodeRead;
+            }
+            break;
+          case eStatusCodeRead:
+            // We're just waiting for the end of the line now
+            break;
+          };
+          // We read something, reset the timeout counter
+          timeoutStart = millis();
+        }
+      } else {
+        // No data available, so pause to allow some to arrive
+        delay(this->kHttpWaitForDataDelay);
+      }
+    }
+
+    // Have we reached the end of an informational status line?
+    if ((c == '\n') && (statusCode < 200)) {
+      c = '\0'; // Clear c so we'll go back into the data reading loop
+    }
+
+  // If we've read a status code successfully but it's informational (1xx)
+  // loop back to the start
+  } while ((httpState == eStatusCodeRead) && (statusCode < 200) );
+
+  // Now return status code as appropriate
+  if ((c == '\n') && (httpState == eStatusCodeRead)) {
+    // We've read the status-line successfully
+    return statusCode;
+  } else if (c != '\n') {
+    // We must've timed out before we reached the end of the line
+    return SnowPlowTracker::ERROR_TIMED_OUT;
+  }
+
+  // Fallback: not a properly formed status line, or not one we could understand
+  return SnowPlowTracker::ERROR_INVALID_RESPONSE;
+}
+
+/**
  * Performs a GET against the
  * specified URI, passing in
  * the given parameters and
@@ -558,23 +660,16 @@ int SnowPlowTracker::getUri(
     // Headers
     this->client->print("Host: ");
     this->client->println(aHost);
-
     this->client->print("User-Agent: ");
     this->client->println(this->kUserAgent);
-
     this->client->println("Connection: close");
-
     this->client->println();
     // End of headers
 
-    // TODO: check return value
-    // https://github.com/amcewen/HttpClient/blob/master/HttpClient.cpp
-    // https://github.com/exosite-garage/arduino_exosite_library/blob/master/Exosite.cpp
+    // Check and return HTTP status code value
+    return getResponseCode();
   } else {
     // Connection didn't work
     return SnowPlowTracker::ERROR_CONNECTION_FAILED;
   }
-
-  // Return updated status code
-  return SnowPlowTracker::SUCCESS;
 }

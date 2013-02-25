@@ -72,20 +72,12 @@ class SnowPlowTracker
  public:
 
   // Our return values from tracking an event
-  enum { 
-    // No issues
-    SUCCESS = 0,
-    // Could not connect to the server
-    ERROR_CONNECTION_FAILED = -1,
-    // SnowPlowTracker wasn't expecting this call to trackEvent
-    // Indicates code is using this library incorrectly
-    ERROR_UNEXPECTED_CALL = -2,
-    // Spent too long waiting for a reply
-    ERROR_TIMED_OUT = -3,
-    // The response from the server is invalid, is it definitely an HTTP
-    // server?
-    ERROR_INVALID_RESPONSE = -4
-  };
+  // Could not connect to the server
+  static const int ERROR_CONNECTION_FAILED = -1;
+  // Spent too long waiting for a reply
+  static const int ERROR_TIMED_OUT = -2;
+  // The response from the server is invalid
+  static const int ERROR_INVALID_RESPONSE = -3;
 
   // Constructor
   SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, const char *aAppId);
@@ -107,8 +99,10 @@ class SnowPlowTracker
   static const char *kUserAgent;
   static const char *kTrackerPlatform;
   static const char *kTrackerVersion;
-  static const int kCollectorPort = 80;
+  static const int kCollectorPort = 80; // Default port
   static const int kMaxEventPairs = 7; // 6 fields plus trailing NULL indicator
+  static const int kHttpResponseTimeout = 10*1000; // ms to wait before sending timeout
+  static const int kHttpWaitForDataDelay = 750; // ms to wait each time there's no data available
 
   // Struct to hold a querychar *name-value pair
   typedef struct
@@ -116,6 +110,19 @@ class SnowPlowTracker
     char* name;
     char* value;
   } QuerystringPair;
+
+  // To track different HTTP statuses
+  typedef enum {
+    eIdle,
+    eRequestStarted,
+    eRequestSent,
+    eReadingStatusCode,
+    eStatusCodeRead,
+    eReadingContentLength,
+    eSkipToEndOfHeader,
+    eLineStartingCRFound,
+    eReadingBody
+  } HttpState;
 
   class EthernetClass* ethernet;
   class EthernetClient* client;
@@ -129,6 +136,7 @@ class SnowPlowTracker
   void init(const char *aHost);
   int track(const QuerystringPair aEventPairs[]) const;
   int getUri(const char *aHost, const int aPort, const char *aPath, const QuerystringPair aPairs[]) const;
+  int getResponseCode() const;
 
   static char *getTransactionId();
   static char *mac2Chars(const byte* aMac);
