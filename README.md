@@ -25,7 +25,7 @@ limitations under the License.
 
 Pending documentation...
 
-[ardiuno]: http://arduino.cc/
+[arduino]: http://arduino.cc/
 [iot]: http://www.forbes.com/sites/ericsavitz/2013/01/14/ces-2013-the-break-out-year-for-the-internet-of-things/
 [snowplow]: https://github.com/snowplow/snowplow
 [arduino-rfid]: http://arduino.cc/blog/category/wireless/rfid/
