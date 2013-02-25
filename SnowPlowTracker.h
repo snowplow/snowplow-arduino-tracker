@@ -2,7 +2,7 @@
  * SnowPlow Arduino Tracker
  *
  * @description Arduino tracker for SnowPlow
- * @version     0.0.1
+ * @version     0.1.0
  * @author      Alex Dean
  * @copyright   SnowPlow Analytics Ltd
  * @license     Apache License Version 2.0
