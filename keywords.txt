@@ -7,7 +7,6 @@
 #######################################
 
 SnowPlowTracker	KEYWORD1
-QuerystringPair KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
@@ -25,8 +24,3 @@ trackStructEvent	KEYWORD2
 ERROR_CONNECTION_FAILED LITERAL1
 ERROR_TIMED_OUT LITERAL1
 ERROR_INVALID_RESPONSE LITERAL1
-kUserAgent LITERAL1
-kTrackerVersion LITERAL1
-kTrackerPlatform LITERAL1
-kCollectorPort LITERAL1
-kMaxEventPairs LITERAL1
