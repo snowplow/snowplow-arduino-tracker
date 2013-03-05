@@ -10,6 +10,13 @@ With this tracker you can collect sensor- and eventstream data from your Arduino
 * Deploy a set of SnowPlow-connected Arduinos to monitor the environment (temperature, humidity, light levels etc) in your warehouse/factory/workplace/shop/museum
 * Send vehicle fleet information (locations, speeds, fuel levels etc) back to SnowPlow using Arduino's [3G and GPS] [3g-gps] shields 
 
+## Find out more
+
+| Technical Docs              | Setup Guide           | Roadmap & Contributing               |         
+|-----------------------------|-----------------------|--------------------------------------|
+| ![i1] [techdocs-image]      | ![i2] [setup-image]   | ![i3] [roadmap-image]                |
+| [Technical Docs] [techdocs] | [Setup Guide] [setup] | _coming soon_                        |
+
 ## Copyright and license
 
 The SnowPlow Arduino Tracker is copyright 2012-2013 SnowPlow Analytics Ltd.
@@ -28,4 +35,11 @@ limitations under the License.
 [snowplow]: https://github.com/snowplow/snowplow
 [arduino-rfid]: http://arduino.cc/blog/category/wireless/rfid/
 [3g-gps]: http://www.cooking-hacks.com/index.php/documentation/tutorials/arduino-3g-gprs-gsm-gps
+
+[techdocs-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/techdocs.png
+[setup-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png
+[roadmap-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/roadmap.png
+[techdocs]: https://github.com/snowplow/snowplow/wiki/Arduino-Tracker
+[setup]: https://github.com/snowplow/snowplow/wiki/Arduino-Tracker-Setup
+
 [license]: http://www.apache.org/licenses/LICENSE-2.0
