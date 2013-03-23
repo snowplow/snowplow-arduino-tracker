@@ -108,7 +108,7 @@ class SnowPlowTracker
   static const int kHttpResponseTimeout = 15*1000; // ms to wait before sending timeout
   static const int kHttpWaitForDataDelay = 750; // ms to wait each time there's no data available
 
-  // Not allowed to call trackStructEvent with a string directly
+  // Not possible to call trackStructEvent with a string directly
   int trackStructEvent(const char *aCategory, const char *aAction, const char *aLabel, const char *aProperty, const char *aValue) const;
 
   // Struct to hold a querychar *name-value pair
