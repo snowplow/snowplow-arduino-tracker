@@ -445,19 +445,19 @@ int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
 }
 
 /**
- * Converts an int into a char *.
+ * Converts an int into a stringified float.
  *
  * IMPORTANT: be sure to free() the returned
  * string after use
  *
- * @param aInt The integer to
- *        convert into a char *
+ * @param aInt The integer to convert to
+ *        to a stringified float
  * @return the converted String
  */
 char *SnowPlowTracker::int2Chars(const int aInt) {
-  const size_t bufferLength = 12; // "-2147483648\0"
+  const size_t bufferLength = 14; // "-2147483648.0\0"
   char *buffer = (char*)malloc(bufferLength);
-  snprintf(buffer, bufferLength, "%d", aInt);
+  snprintf(buffer, bufferLength, "%d.0", aInt);
   return buffer;
 }
 
