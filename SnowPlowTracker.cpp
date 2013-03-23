@@ -287,6 +287,11 @@ int SnowPlowTracker::trackStructEvent(
   LOG_INFO(aValue);  
   LOGLN_INFO("]");
 
+  // Validate that we have our category and action
+  if (aCategory == NULL || aAction == NULL) {
+    return nowPlowTracker::ERROR_MISSING_ARGUMENT;
+  }
+
   const QuerystringPair eventPairs[] = {
     { "e", "se" }, // Structured event
     { "ev_ca", (char*)aCategory },

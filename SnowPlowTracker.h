@@ -78,6 +78,8 @@ class SnowPlowTracker
   static const int ERROR_TIMED_OUT = -2;
   // The response from the server is invalid
   static const int ERROR_INVALID_RESPONSE = -3;
+  // Required fields (category & action) missing
+  static const int ERROR_MISSING_ARGUMENT = -4;
 
   // Constructor
   SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, const char *aAppId);
