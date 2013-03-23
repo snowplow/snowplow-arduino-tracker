@@ -70,7 +70,7 @@ void loop()
   if (millis() - prevTime >= (15000))
   {
     // Float ping: all fields but label set
-    snowplow.trackStructEvent("example", "float ping", NULL, "celsius", 15.3, 1);
+    snowplow.trackStructEvent("example", "float ping", NULL, "celsius", 15.3f, 1);
 
     prevTime = millis();
   }
