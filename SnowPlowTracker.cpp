@@ -289,7 +289,7 @@ int SnowPlowTracker::trackStructEvent(
 
   // Validate that we have our category and action
   if (aCategory == NULL || aAction == NULL) {
-    return nowPlowTracker::ERROR_MISSING_ARGUMENT;
+    return SnowPlowTracker::ERROR_MISSING_ARGUMENT;
   }
 
   const QuerystringPair eventPairs[] = {
