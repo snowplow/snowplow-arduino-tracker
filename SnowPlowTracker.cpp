@@ -126,7 +126,7 @@ int SnowPlowTracker::trackStructEvent(
   const int aValue) const {
 
   char *value = int2Chars(aValue);
-  const int status = this->trackStructEvent(aCategory, aAction, aLabel, aProperty, value);
+  const int status = this->_trackStructEvent(aCategory, aAction, aLabel, aProperty, value);
   free(value);
   return status;
 }
@@ -166,7 +166,7 @@ int SnowPlowTracker::trackStructEvent(
   const int aValuePrecision) const {
 
   char *value = double2Chars(aValue, aValuePrecision);
-  const int status = this->trackStructEvent(aCategory, aAction, aLabel, aProperty, value);
+  const int status = this->_trackStructEvent(aCategory, aAction, aLabel, aProperty, value);
   free(value);
   return status;
 }
@@ -206,7 +206,7 @@ int SnowPlowTracker::trackStructEvent(
   const int aValuePrecision) const {
 
   char *value = double2Chars(aValue, aValuePrecision);
-  const int status = this->trackStructEvent(aCategory, aAction, aLabel, aProperty, value);
+  const int status = this->_trackStructEvent(aCategory, aAction, aLabel, aProperty, value);
   free(value);
   return status;
 }
@@ -239,7 +239,7 @@ int SnowPlowTracker::trackStructEvent(
   const char *aLabel,
   const char *aProperty) const {
 
-  return this->trackStructEvent(aCategory, aAction, aLabel, aProperty, NULL);
+  return this->_trackStructEvent(aCategory, aAction, aLabel, aProperty, NULL);
 }
 
 /**
@@ -268,7 +268,7 @@ int SnowPlowTracker::trackStructEvent(
  * @return An integer indicating the success/failure
  *         of logging the event to SnowPlow
  */ 
-int SnowPlowTracker::trackStructEvent(
+int SnowPlowTracker::_trackStructEvent(
   const char *aCategory,
   const char *aAction,
   const char *aLabel,
@@ -459,6 +459,8 @@ int SnowPlowTracker::countPairs(const QuerystringPair aPairs[]) {
  *        to a stringified float
  * @return the converted String
  */
+// TODO: can't decide if adding ".0" on the end
+// should be the tracker's job or the ETL.
 char *SnowPlowTracker::int2Chars(const int aInt) {
   const size_t bufferLength = 14; // "-2147483648.0\0"
   char *buffer = (char*)malloc(bufferLength);
