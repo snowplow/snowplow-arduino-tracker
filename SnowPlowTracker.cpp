@@ -25,7 +25,7 @@
 #include <Ethernet.h>
 #include <EthernetClient.h>
 
-#define LOG_LEVEL   0x03 // Change to 0x01 before publishing
+#define LOG_LEVEL   0x03 // Change to 0x00 when you've finished testing
 #include "SnowPlowTracker.h"
 
 // Initialize constants
