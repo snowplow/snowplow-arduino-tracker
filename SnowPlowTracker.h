@@ -80,6 +80,8 @@ class SnowPlowTracker
   static const int ERROR_INVALID_RESPONSE = -3;
   // Required fields (category & action) missing
   static const int ERROR_MISSING_ARGUMENT = -4;
+  // We had a client or server HTTP error
+  static const int ERROR_HTTP_STATUS = -5;  
 
   // Constructor
   SnowPlowTracker(EthernetClass *aEthernet, const byte* aMac, const char *aAppId);

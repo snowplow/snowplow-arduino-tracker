@@ -614,8 +614,12 @@ int SnowPlowTracker::getResponseCode() const {
 
   // Now return status code as appropriate
   if ((c == '\n') && (httpState == eStatusCodeRead)) {
-    // We've read the status-line successfully
-    return statusCode;
+    // We've read the status-line successfully, check if it's an error code
+    if (statusCode < 400) {
+      return statusCode;
+    } else {
+      return SnowPlowTracker::ERROR_HTTP_STATUS;
+    }
   } else if (c != '\n') {
     // We must've timed out before we reached the end of the line
     return SnowPlowTracker::ERROR_TIMED_OUT;
