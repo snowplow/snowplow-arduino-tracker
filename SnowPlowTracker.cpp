@@ -212,6 +212,37 @@ int SnowPlowTracker::trackStructEvent(
 }
 
 /**
+ * Tracks a structured event to a
+ * SnowPlow collector: version
+ * where there is no value field.
+ *
+ * @param aCategory The name you supply for
+ *        the group of objects you want to track
+ * @param aAction A char *that is uniquely
+ *        paired with each category, and commonly
+ *        used to define the type of user
+ *        interaction for the web object
+ * @param aLabel An optional string
+ *        to provide additional dimensions to the
+ *        event data
+ * @param aProperty An optional string
+ *        describing the object or the action
+ *        performed on it. This might be the
+ *        quantity of an item added to basket
+
+ * @return An integer indicating the success/failure
+ *         of logging the event to SnowPlow
+ */
+int SnowPlowTracker::trackStructEvent(
+  const char *aCategory,
+  const char *aAction,
+  const char *aLabel,
+  const char *aProperty) const {
+
+  return this->trackStructEvent(aCategory, aAction, aLabel, aProperty, NULL);
+}
+
+/**
  * Sends a structured event to a SnowPlow
  * collector. Builds the set of event
  * name=value pairs and then passes them

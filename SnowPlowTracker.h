@@ -90,10 +90,10 @@ class SnowPlowTracker
   void setUserId(char *userId);
 
   // Track structured SnowPlow events
+  int trackStructEvent(const char *aCategory, const char *aAction, const char *aLabel = NULL, const char *aProperty = NULL) const;
   int trackStructEvent(const char *aCategory, const char *aAction, const char *aLabel, const char *aProperty, const int aValue) const;
   int trackStructEvent(const char *aCategory, const char *aAction, const char *aLabel, const char *aProperty, const double aValue, const int aValuePrecision = 2) const;
   int trackStructEvent(const char *aCategory, const char *aAction, const char *aLabel, const char *aProperty, const float aValue, const int aValuePrecision = 2) const;
-  int trackStructEvent(const char *aCategory, const char *aAction, const char *aLabel = NULL, const char *aProperty = NULL, const char *aValue = NULL) const;
 
  private:
   static const char *kUserAgent;
@@ -103,6 +103,9 @@ class SnowPlowTracker
   static const int kMaxEventPairs = 7; // 6 fields plus trailing NULL indicator
   static const int kHttpResponseTimeout = 15*1000; // ms to wait before sending timeout
   static const int kHttpWaitForDataDelay = 750; // ms to wait each time there's no data available
+
+  // Not allowed to call trackStructEvent with a string directly
+  int trackStructEvent(const char *aCategory, const char *aAction, const char *aLabel, const char *aProperty, const char *aValue) const;
 
   // Struct to hold a querychar *name-value pair
   typedef struct
