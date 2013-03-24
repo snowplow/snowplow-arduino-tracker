@@ -12,10 +12,10 @@ With this tracker you can collect sensor- and eventstream data from your Arduino
 
 ## Find out more
 
-| Technical Docs              | Setup Guide           | Roadmap & Contributing               |         
-|-----------------------------|-----------------------|--------------------------------------|
-| ![i1] [techdocs-image]      | ![i2] [setup-image]   | ![i3] [roadmap-image]                |
-| [Technical Docs] [techdocs] | [Setup Guide] [setup] | _coming soon_                        |
+| Technical Docs                  | Setup Guide               | Roadmap & Contributing               |         
+|---------------------------------|---------------------------|--------------------------------------|
+| ![i1] [techdocs-image]          | ![i2] [setup-image]       | ![i3] [roadmap-image]                |
+| **[Technical Docs]** [techdocs] | **[Setup Guide]** [setup] | _coming soon_                        |
 
 ## Copyright and license
 
