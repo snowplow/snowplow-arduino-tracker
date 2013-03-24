@@ -7,7 +7,7 @@ An event tracker for IP-connected [Arduino] [arduino] boards, the SnowPlow Ardui
 With this tracker you can collect sensor- and eventstream data from your Arduino-based projects and send it back to your [SnowPlow] [snowplow] collector. Some project ideas:
 
 * Track the movement of products around your shop/warehouse/factory using Arduino, [RFID readers] [arduino-rfid] and SnowPlow
-* Deploy a set of SnowPlow-connected Arduinos to monitor the environment (temperature, humidity, light levels etc) in your warehouse/factory/workplace/shop/museum
+* Deploy a set of SnowPlow-connected Arduinos to monitor the environment (temperature, humidity, light levels etc) in your home
 * Send vehicle fleet information (locations, speeds, fuel levels etc) back to SnowPlow using Arduino's [3G and GPS] [3g-gps] shields 
 
 ## Find out more
