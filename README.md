@@ -10,6 +10,8 @@ With this tracker you can collect sensor- and eventstream data from your Arduino
 * Deploy a set of SnowPlow-connected Arduinos to monitor the environment (temperature, humidity, light levels etc) in your home
 * Send vehicle fleet information (locations, speeds, fuel levels etc) back to SnowPlow using Arduino's [3G and GPS] [3g-gps] shields 
 
+For a real project using this tracker to log temperature sensor data to SnowPlow, see [arduino-temp-tracker] [arduino-temp-tracker].
+
 ## Find out more
 
 | Technical Docs                  | Setup Guide               | Roadmap & Contributing               |         
@@ -35,6 +37,8 @@ limitations under the License.
 [snowplow]: https://github.com/snowplow/snowplow
 [arduino-rfid]: http://arduino.cc/blog/category/wireless/rfid/
 [3g-gps]: http://www.cooking-hacks.com/index.php/documentation/tutorials/arduino-3g-gprs-gsm-gps
+
+[arduino-temp-tracker]: https://github.com/alexanderdean/arduino-temp-tracker
 
 [techdocs-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/techdocs.png
 [setup-image]: https://d3i6fms1cm1j0i.cloudfront.net/github/images/setup.png
