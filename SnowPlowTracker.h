@@ -91,7 +91,7 @@ class SnowPlowTracker
   void initUrl(const char *aHost);
 
   // Manually set the 'user' ID
-  void setUserId(char *userId);
+  void setUserId(const char *aUserId);
 
   // Track structured SnowPlow events
   int trackStructEvent(const char *aCategory, const char *aAction, const char *aLabel = NULL, const char *aProperty = NULL) const;
