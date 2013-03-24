@@ -87,7 +87,7 @@ void SnowPlowTracker::initUrl(const char *aHost) {
  * @param @aUserId The new User Id
  */
 void SnowPlowTracker::setUserId(const char *aUserId) {
-  this->userId = aUserId;
+  this->userId = (char*)aUserId;
 
   LOG_INFO("SnowPlow user id updated to [");
   LOG_INFO(aUserId);
